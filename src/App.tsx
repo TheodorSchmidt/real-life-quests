@@ -1,24 +1,53 @@
 import React from 'react';
 import logo from './logo.svg';
-import './App.css';
+//import './App.css';
+import {
+  BrowserRouter as Router,
+  Routes as Switch,
+  Route
+} from "react-router-dom"; 
+import { createUseStyles } from "react-jss";
+import Header from './components/Header';
+import Main from './components/Main';
+import Quests from './components/Quests';
+import Characters from './components/Characters';
+import Locations from './components/Locations';
+import Perks from './components/Perks';
+import Tavern from './components/Tavern';
+import Statistic from './components/Statistic';
+import Diary from './components/Diary';
+import Footer from './components/Footer';
+
+const useStyles = createUseStyles({
+  '@global': {
+    boxSizing: "border-box",
+    body: {
+      fontFamily: "sans-serif",
+      margin: "0px",
+      padding: "0px"
+    }
+  } 
+})
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Router>
+        <div>
+          <Header />
+          <Switch>
+            <Route path="/" element={<Main />} />
+            <Route path="/quests" element={<Quests />} />
+            <Route path="/perks" element={<Perks />} />
+            <Route path="/characters" element={<Characters />} />
+            <Route path="/locations" element={<Locations />} />          
+            <Route path="/tavern" element={<Tavern />} />
+            <Route path="/diary" element={<Diary />} />
+            <Route path="/statistic" element={<Statistic />} />
+          </Switch>
+        </div>
+      </Router>
+      <Footer />
     </div>
   );
 }
