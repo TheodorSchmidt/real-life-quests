@@ -6,6 +6,7 @@ import {
   Routes as Switch,
   Route
 } from "react-router-dom"; 
+import { observer } from 'mobx-react-lite';
 import { createUseStyles } from "react-jss";
 import Header from './components/Header';
 import Main from './components/Main';
@@ -17,6 +18,7 @@ import Tavern from './components/Tavern';
 import Statistic from './components/Statistic';
 import Diary from './components/Diary';
 import Footer from './components/Footer';
+
 
 const useStyles = createUseStyles({
   '@global': {
@@ -52,4 +54,4 @@ function App() {
   );
 }
 
-export default App;
+export default observer(App);

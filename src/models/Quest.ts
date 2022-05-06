@@ -8,15 +8,16 @@ enum DateCoefficient { TooEarlier=1, MonthEarlier=2, TwoWeeksEarlier=3, WeekEarl
                        ThreeDaysLater=7, WeekLater=8, TwoWeeksLater=9, MonthLater=10, TooLater=11}
 
 export default interface Quest {
+    id?: string;
     name: string;
     description?: string;
-    difficulty: Coefficient;
-    importancy: Coefficient;
-    motivation: Coefficient;
+    difficulty?: Coefficient; //? yet
+    importancy?: Coefficient; //? yet
+    motivation?: Coefficient; //? yet
     date?: Date;
     dateModif?: DateCoefficient;
-    reward: number;
-    experience: number;
+    reward?: number; //? yet
+    experience?: number; //? yet
     characters?: Character[];
     locations?: Location;
     perks?: Perk[];
