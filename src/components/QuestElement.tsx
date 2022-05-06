@@ -9,11 +9,18 @@ type Props = {
     item: Quest
 }
 
+const useStyles = createUseStyles({
+    'button': {
+        pointer: 'cursor'
+    }
+})
+
 function QuestElement({item}: Props) {
+    const classes = useStyles();
     const {deleteQuest} = useStore();
     return(
         <div>
-            {item.name} <DeleteIcon onClick={() => deleteQuest(item.id)}/>
+            {item.name} <DeleteIcon className={classes.button} onClick={() => deleteQuest(item.id)}/>
         </div>
     )
 }
