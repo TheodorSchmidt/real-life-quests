@@ -5,6 +5,7 @@ import { createUseStyles } from 'react-jss';
 
 const useStyles = createUseStyles({
     'modal': {
+        zIndex: 5,
         height: '100vh',
         width: '100vw',
         backgroundColor: 'rgba(0,0,0,0.4)',
@@ -19,6 +20,7 @@ const useStyles = createUseStyles({
         pointerEvents: 'none'
     },
     'modal_active': {
+        zIndex: 5,
         height: '100vh',
         width: '100vw',
         backgroundColor: 'rgba(0,0,0,0.4)',
@@ -32,11 +34,11 @@ const useStyles = createUseStyles({
         transform: 'scale(1)',
         opacity: '1',
         pointerEvents: 'all',
-       
     },
     'modal_content': {
         display: 'inline-block',
         padding: '50px',
+        paddingTop: '10px',
         borderRadius: '12px',
         backgroundColor: 'white',
         width: '50wv',
@@ -46,6 +48,7 @@ const useStyles = createUseStyles({
     'modal_content_active': {
         display: 'inline-block',
         padding: '50px',
+        paddingTop: '10px',
         borderRadius: '12px',
         backgroundColor: 'white',
         width: '50wv',

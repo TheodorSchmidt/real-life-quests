@@ -1,4 +1,6 @@
 import React from "react";
+import { observer } from "mobx-react-lite";
+import useStore from "../hooks/useStore";
 import { createUseStyles } from "react-jss";
 import {
     BrowserRouter as Router,
@@ -31,6 +33,7 @@ const useStyles = createUseStyles({
 
 function Header() {
     const classes = useStyles();
+    const {coins} = useStore();
     return (
        <div className={classes.header}>
            <ul className={classes.list}>
@@ -58,9 +61,12 @@ function Header() {
                 <li>
                     <Link to="/statistic">Статистика</Link>
                 </li>
+                <li>
+                    Монет: {coins}                
+                </li>
             </ul>
        </div>
     )
 }
 
-export default Header;
+export default observer(Header);
