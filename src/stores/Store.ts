@@ -107,6 +107,11 @@ class Store {
             this.selectedQuest = quest;
         })
     }
+    cancelSelectingQuest = () => {
+        runInAction(() => {
+            this.selectedQuest = undefined;
+        })
+    }
     deleteQuest = (id: string = "default") => {
         runInAction(() => {
             this.selectedQuest = undefined;

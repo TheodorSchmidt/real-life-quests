@@ -9,17 +9,27 @@ import { toJS } from "mobx";
 import  Quest  from "../models/Quest";
 
 
+type Props = {
+    type: string,
+}
 
-function QuestsList() {
+function QuestsList({type}: Props) {
     const {quests} = useStore();
-    
+    let showedQuests = quests.slice(0);
+    if (type === "ACTIVE") {
+        showedQuests = showedQuests.filter(quest => quest.status === 1)
+    } else if (type === "COMPLETED") {
+        showedQuests = showedQuests.filter(quest => quest.status === 2)
+    } else if (type === "FAILED") {
+        showedQuests = showedQuests.filter(quest => quest.status === 3)
+    }
     return(
         <Virtuoso
             style={{ height: "800px", width: "100%"}}
-            data={quests}
+            data={showedQuests}
             itemContent={(index) => {
                 return(
-                    <QuestElement item={quests[index]} />
+                    <QuestElement item={showedQuests[index]} />
                 )}
             }
         />

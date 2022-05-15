@@ -44,14 +44,34 @@ const useStyles = createUseStyles({
     },
     'description': {
         fontStyle: 'italic'
+    },
+    'menu': {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "10px",
+        boxShadow: "0 0 3px 0 rgba(0, 0, 0, 0.3)",
+        backgroundColor: "white"
+    },
+    'navigation': {
+        margin: "0px",
+        padding: "4px",
+        '& li': {
+            display: "inline",
+            marginRight: "5px",
+            border: "1px solid #000",
+            padding: "3px"
+        }
     }
 })
 
 function Quests() {
     const classes = useStyles();
-    const {addQuest, selectedQuest, deleteQuest, editQuest} = useStore();
+    const {addQuest, selectedQuest, deleteQuest, editQuest, cancelSelectingQuest} = useStore();
     const [modalActiveAdd, setModalActiveAdd] = useState(false);
     const [modalActiveEdit, setModalActiveEdit] = useState(false);
+    const [questType, setQuestType] = useState("ACTIVE");
+
     //const []
 
     function AddButton() {
@@ -119,7 +139,7 @@ function Quests() {
                                 </div>      
                             </div>
                             <div className={classes.button}>
-                                <button id="editQuest" onClick={() => EditButton()}>Добавить</button>
+                                <button id="editQuest" onClick={() => EditButton()}>Изменить</button>
                             </div>
                         </div>
                     </Modal>
@@ -130,11 +150,18 @@ function Quests() {
 
     return(
         <div>
+            <div className={classes.menu}>
+                <ul className={classes.navigation}>
+                    <li onClick={() => {setQuestType("ACTIVE"); cancelSelectingQuest()}}>Активные</li>
+                    <li onClick={() => {setQuestType("COMPLETED"); cancelSelectingQuest()}}>Выполненные</li>
+                    <li onClick={() => {setQuestType("FAILED"); cancelSelectingQuest()}}>Проваленные</li>    
+                </ul>
+            </div>
             <button id="createQuest" onClick={() => setModalActiveAdd(true)}>Создать квест</button>
             {/* место для сортировки и фильтров */}
             {printSelectedQuest()}
             <div className={classes.list}>
-                <QuestsList />
+                <QuestsList type={questType}/>
             </div>
             <Modal active={modalActiveAdd} setActive={setModalActiveAdd}>
                 <div className={classes.content}>
