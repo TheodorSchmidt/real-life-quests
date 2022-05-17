@@ -35,7 +35,8 @@ const useStyles = createUseStyles({
     'info': {
         display: 'inline-block',
         float: 'right',
-        padding: '15px',
+        padding: '20px',
+        marginTop: '25px',
         border: '2px solid',
         width: '45%'
     },
@@ -69,7 +70,7 @@ const useStyles = createUseStyles({
 
 function Quests() {
     const classes = useStyles();
-    const {addQuest, selectedQuest, deleteQuest, editQuest, cancelSelectingQuest} = useStore();
+    const {addQuest, selectedQuest, deleteQuest, editQuest, cancelSelectingQuest, updateDateDiff} = useStore();
     const [modalActiveAdd, setModalActiveAdd] = useState(false);
     const [modalActiveEdit, setModalActiveEdit] = useState(false);
     const [questType, setQuestType] = useState("ACTIVE");
@@ -77,67 +78,104 @@ function Quests() {
 
     function printSelectedQuest() {
         if (selectedQuest) {
-            return(
-                <div className={classes.info}>
-                    <div className={classes.name}>{selectedQuest?.name}</div>
-                    <div className={classes.description}>{selectedQuest?.description}</div>
-                    <button onClick={() => setModalActiveEdit(true)}>Редактировать квест</button>
-                    <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить квест</button>
-                    <Modal active={modalActiveEdit} setActive={setModalActiveEdit}>
-                        <div className={classes.content}>
-                            <p>Редактирование квеста</p>
-                            <div key={selectedQuest.name}>
-                                <input 
-                                    id="questNameE"
-                                    type="text"
-                                    defaultValue={selectedQuest.name}
-                                    placeholder="Введите название *"
-                                />
-                            </div>
-                            <div key={selectedQuest.description}>
+            if (selectedQuest.status === 1) {
+                if (selectedQuest.deadline) {
+                    updateDateDiff(selectedQuest);
+                }
+                return(
+                    <div className={classes.info}>
+                        <div className={classes.name}>{selectedQuest?.name}</div>
+                        <div>Статус: в процессе</div>
+                        <div className={classes.description}>{selectedQuest?.description}</div>
+                        <div>Награда: {selectedQuest.reward}</div>
+                        <div>Крайний срок: {selectedQuest.deadline?.toString()}</div>
+                        <div>
+                            Осталось: {selectedQuest.dateDifference} дня
+                        </div> 
+                        <button onClick={() => setModalActiveEdit(true)}>Редактировать квест</button>
+                        <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить квест</button>
+                        <Modal active={modalActiveEdit} setActive={setModalActiveEdit}>
+                            <div className={classes.content}>
+                                <p>Редактирование квеста</p>
+                                <div key={selectedQuest.name}>
+                                    <input 
+                                        id="questNameE"
+                                        type="text"
+                                        defaultValue={selectedQuest.name}
+                                        placeholder="Введите название *"
+                                    />
+                                </div>
+                                <div key={selectedQuest.description}>
+                                    <div>
+                                        <textarea id="questDescriptionE" defaultValue={selectedQuest.description}placeholder="Введите описание"></textarea>
+                                    </div>
+                                </div>
+                                <div className={classes.select}>
+                                    <div className={classes.selectItem}>
+                                        <select id="questDifficultyE" name="difficulty" defaultValue={selectedQuest.difficulty}>
+                                            <option selected disabled value="0">Выберите сложность *</option>
+                                            <option value="VerySmall">1 (Очень просто)</option>
+                                            <option value="Small">2 (Просто)</option>
+                                            <option value="Middle">3 (Средне)</option>
+                                            <option value="Big">4 (Сложно)</option>
+                                            <option value="VeryBig">5 (Сложно)</option>
+                                        </select>
+                                    </div>
+                                    <div className={classes.selectItem}>
+                                        <select id="questImportancyE" name="importancy" defaultValue={selectedQuest.importancy}>
+                                            <option selected disabled value="0">Выберите важность *</option>
+                                            <option value="VerySmall">1 (Совсем не важно)</option>
+                                            <option value="Small">2 (Не важно)</option>
+                                            <option value="Middle">3 (Средне)</option>
+                                            <option value="Big">4 (Важно)</option>
+                                            <option value="VeryBig">5 (Очень важно)</option>
+                                        </select>
+                                    </div>
+                                    <div className={classes.selectItem}>
+                                        <select id="questMotivationE" name="motivation" defaultValue={selectedQuest.motivation}>
+                                            <option selected disabled value="0">Выберите важность *</option>
+                                            <option value="VeryBig">1 (Совсем не хочу делать)</option>
+                                            <option value="Big">2 (Не хочу делать)</option>
+                                            <option value="Middle">3 (Не очень хочу делать)</option>
+                                            <option value="Small">4 (Хочу делать)</option>
+                                            <option value="VerySmall">5 (Очень хочу делать)</option>
+                                        </select>
+                                    </div>      
+                                </div>
                                 <div>
-                                    <textarea id="questDescriptionE" defaultValue={selectedQuest.description}placeholder="Введите описание"></textarea>
+                                    <span>Срок выполнения</span>
+                                    <DatePicker id="questDeadlineE" selected={deadline} onChange={(date: Date) => setDeadline(date)}/>
+                                </div>
+                                <div className={classes.button}>
+                                    <button id="editQuest" onClick={() => {editQuest(selectedQuest?.id); setModalActiveEdit(false)}}>Изменить</button>
                                 </div>
                             </div>
-                            <div className={classes.select}>
-                                <div className={classes.selectItem}>
-                                    <select id="questDifficultyE" name="difficulty" defaultValue={selectedQuest.difficulty}>
-                                        <option selected disabled value="0">Выберите сложность *</option>
-                                        <option value="VerySmall">1 (Очень просто)</option>
-                                        <option value="Small">2 (Просто)</option>
-                                        <option value="Middle">3 (Средне)</option>
-                                        <option value="Big">4 (Сложно)</option>
-                                        <option value="VeryBig">5 (Сложно)</option>
-                                    </select>
-                                </div>
-                                <div className={classes.selectItem}>
-                                    <select id="questImportancyE" name="importancy" defaultValue={selectedQuest.importancy}>
-                                        <option selected disabled value="0">Выберите важность *</option>
-                                        <option value="VerySmall">1 (Совсем не важно)</option>
-                                        <option value="Small">2 (Не важно)</option>
-                                        <option value="Middle">3 (Средне)</option>
-                                        <option value="Big">4 (Важно)</option>
-                                        <option value="VeryBig">5 (Очень важно)</option>
-                                    </select>
-                                </div>
-                                <div className={classes.selectItem}>
-                                    <select id="questMotivationE" name="motivation" defaultValue={selectedQuest.motivation}>
-                                        <option selected disabled value="0">Выберите важность *</option>
-                                        <option value="VeryBig">1 (Совсем не хочу делать)</option>
-                                        <option value="Big">2 (Не хочу делать)</option>
-                                        <option value="Middle">3 (Не очень хочу делать)</option>
-                                        <option value="Small">4 (Хочу делать)</option>
-                                        <option value="VerySmall">5 (Очень хочу делать)</option>
-                                    </select>
-                                </div>      
-                            </div>
-                            <div className={classes.button}>
-                                <button id="editQuest" onClick={() => {editQuest(selectedQuest?.id); setModalActiveEdit(false)}}>Изменить</button>
-                            </div>
-                        </div>
-                    </Modal>
-                </div>
-            )
+                        </Modal>
+                    </div>
+                )
+            } else if (selectedQuest.status === 2){
+                return(
+                    <div className={classes.info}>
+                        <div className={classes.name}>{selectedQuest?.name}</div>
+                        <div>Статус: выполнено</div>
+                        <div className={classes.description}>{selectedQuest?.description}</div>
+                        <div>Дата выполнения: {selectedQuest?.dateComplete?.toString()}</div>
+                        <div>Полученные очки: {selectedQuest.reward}</div>
+                        <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить запись</button>
+                    </div>
+                )
+            } else {
+                return(
+                    <div className={classes.info}>
+                        <div className={classes.name}>{selectedQuest?.name}</div>
+                        <div>Статус: провалено</div>
+                        <div className={classes.description}>{selectedQuest?.description}</div>
+                        {/* <div>Дата выполнения: {selectedQuest?.dateComplete?.toString()}</div>
+                        <div>Полученные очки: {selectedQuest.reward}</div> */}
+                        <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить запись</button>
+                    </div>
+                )
+            }
         }
     }
     return(

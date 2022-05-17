@@ -12,11 +12,13 @@ export default interface Quest {
     id?: string;
     name: string;
     description?: string;
-    difficulty: Coefficient; //? yet
-    importancy: Coefficient; //? yet
-    motivation: Coefficient; //? yet
+    difficulty: Coefficient; 
+    importancy: Coefficient; 
+    motivation: Coefficient; 
     deadline?: Date;
     dateModif?: DateCoefficient;
+    dateDifference?: number;
+    dateComplete?: Date;
     reward: number; 
     experience?: number; //? yet
     characters?: Character[];

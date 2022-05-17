@@ -63,7 +63,6 @@ class Store {
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivation')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
-        console.log(questDeadline);
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
             let questData: Quest = {
                 name: questName,
@@ -92,6 +91,10 @@ class Store {
             if (cancel === false) {
                 if (complete === true) {
                     quest.status = 2;
+                    quest.dateComplete = new Date();
+                    if (quest.deadline) {
+                        this.updateDateDiff(quest);
+                    }
                     this.updateCoins(quest.reward);
                 } else {
                     quest.status = 3;
@@ -99,21 +102,22 @@ class Store {
             } else if (cancel === true) {
                 if (complete === true) {
                     quest.status = 1;
+                    delete quest.dateComplete;
                     this.updateCoins(-quest.reward);
                 } else {
                     quest.status = 1;
                 }
             }
-            console.log(quest);
+            this.cancelSelectingQuest();
             const updates: any = {};
             updates['/quests/' + snapshot.key] = quest;
+            console.log(quest);
             return update(ref(database), updates)
         })
     }
     selectQuest = (quest: Quest) => {
-        if (quest.deadline) {
-            this.updateDateDiff(quest);
-        }
+        // if (quest.deadline && quest.status === 1) {
+        // }
         runInAction(() => {
             this.selectedQuest = quest;
         })
@@ -136,15 +140,21 @@ class Store {
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancyE')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivationE')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescriptionE')).value;
+        const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadlineE')).value;
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
             get(child(questsRef, `quests/${id}`)).then((snapshot) => {
-                const quest: Quest = snapshot.val();
+                let quest: Quest = snapshot.val();
                 quest.name = questName;
                 quest.difficulty = Coefficient[questDifficulty];
                 quest.importancy = Coefficient[questImportancy];
                 quest.motivation = Coefficient[questMotivation];
                 quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
                 quest.description = questDescription;
+                if (questDeadline !== "" && questDeadline !== undefined) {
+                    const date = new Date(questDeadline);
+                    quest.deadline = date; 
+                    quest = this.calcDateDiff(quest);
+                }
                 const updates: any = {};
                 updates['/quests/' + snapshot.key] = quest;
                 runInAction(() => {
@@ -155,11 +165,16 @@ class Store {
         }  
     }
     calcDateDiff(quest: Quest) {
+        console.log(11)
         if (quest.deadline) {
-            const currentDate = new Date();
+            let currentDate = new Date();
+            if (quest.dateComplete) {
+                currentDate = new Date(quest.dateComplete);
+            } 
             const dateDeadline = new Date(quest.deadline);
             const dateDifference = new Date(dateDeadline.getTime() - currentDate.getTime());
             const difference = dateDifference.getUTCDate() - 1;
+            quest.dateDifference = difference;
             if (difference > 30) {
                 quest.dateModif = DateCoefficient["TooEarlier"];
             } else if (difference <= 30 && difference > 14) {
@@ -198,7 +213,8 @@ class Store {
         const questsRef = ref(database);
         get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
             let quest: Quest = snapshot.val();
-            quest = this.calcDateDiff(quest);
+            console.log(quest);
+            this.calcDateDiff(quest);
             const updates: any = {};
             updates['/quests/' + snapshot.key] = quest;
             return update(ref(database), updates)

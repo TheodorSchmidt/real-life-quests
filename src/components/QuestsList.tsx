@@ -23,6 +23,7 @@ function QuestsList({type}: Props) {
     } else if (type === "FAILED") {
         showedQuests = showedQuests.filter(quest => quest.status === 3)
     }
+    
     return(
         <Virtuoso
             style={{ height: "800px", width: "100%"}}
