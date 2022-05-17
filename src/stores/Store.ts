@@ -5,6 +5,7 @@ import Quest from "../models/Quest";
 import { Coefficient, Status } from '../models/Quest';
 import fetchQuests from "../api/fetchQuests"
 import { toJS } from 'mobx';
+import { DateCoefficient } from "../models/Quest";
 
 class Store {
     @observable coins: number = 0;
@@ -61,8 +62,10 @@ class Store {
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancy')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivation')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
+        const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
+        console.log(questDeadline);
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
-            const questData: Quest = {
+            let questData: Quest = {
                 name: questName,
                 difficulty: Coefficient[questDifficulty],
                 importancy: Coefficient[questImportancy],
@@ -70,6 +73,11 @@ class Store {
                 reward: 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation],
                 description: questDescription,
                 status: Status["ACTIVE"]
+            }
+            if (questDeadline !== "" && questDeadline !== undefined) {
+                const date = new Date(questDeadline);
+                questData.deadline = date; 
+                questData = this.calcDateDiff(questData);
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -103,6 +111,9 @@ class Store {
         })
     }
     selectQuest = (quest: Quest) => {
+        if (quest.deadline) {
+            this.updateDateDiff(quest);
+        }
         runInAction(() => {
             this.selectedQuest = quest;
         })
@@ -134,7 +145,6 @@ class Store {
                 quest.motivation = Coefficient[questMotivation];
                 quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
                 quest.description = questDescription;
-                console.log(questName);
                 const updates: any = {};
                 updates['/quests/' + snapshot.key] = quest;
                 runInAction(() => {
@@ -143,6 +153,56 @@ class Store {
                 return update(ref(database), updates)
             })
         }  
+    }
+    calcDateDiff(quest: Quest) {
+        if (quest.deadline) {
+            const currentDate = new Date();
+            const dateDeadline = new Date(quest.deadline);
+            const dateDifference = new Date(dateDeadline.getTime() - currentDate.getTime());
+            const difference = dateDifference.getUTCDate() - 1;
+            if (difference > 30) {
+                quest.dateModif = DateCoefficient["TooEarlier"];
+            } else if (difference <= 30 && difference > 14) {
+                quest.dateModif = DateCoefficient["MonthEarlier"];
+            } else if (difference <= 14 && difference > 7) {
+                quest.dateModif = DateCoefficient["TwoWeeksEarlier"];
+            } else if (difference <= 7 && difference > 3) {
+                quest.dateModif = DateCoefficient["WeekEarlier"];
+            } else if (difference <= 3 && difference > 0) {
+                quest.dateModif = DateCoefficient["ThreeDaysEarlier"];
+            } else if (difference === 0) {
+                quest.dateModif = DateCoefficient["Today"];
+            } else if (difference < 0 && difference > -3) {
+                quest.dateModif = DateCoefficient["ThreeDaysLater"];
+            } else if (difference <= -3 && difference > -7) {
+                quest.dateModif = DateCoefficient["WeekLater"];
+            } else if (difference <= -7 && difference > -14) {
+                quest.dateModif = DateCoefficient["TwoWeeksLater"];
+            } else if (difference <= -14 && difference > -30) {
+                quest.dateModif = DateCoefficient["MonthLater"];
+            } else {
+                quest.dateModif = DateCoefficient["TooLater"];
+            }
+            // console.log("Текущая дата: ", currentDate);
+            // console.log("Дедлайн: ", quest.deadline);
+            // console.log("Дата разницы: ", dateDifference);
+            // console.log("Разница: ", difference);
+            // console.log("Модификатор: ", quest.dateModif);
+            // console.log("Награда до: ", quest.reward);
+            quest.reward = 100 * quest.difficulty * quest.importancy * quest.motivation * quest.dateModif;
+            // console.log("Награда после:", quest.reward);
+        }
+        return quest;
+    }
+    updateDateDiff(quest: Quest) {
+        const questsRef = ref(database);
+        get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
+            let quest: Quest = snapshot.val();
+            quest = this.calcDateDiff(quest);
+            const updates: any = {};
+            updates['/quests/' + snapshot.key] = quest;
+            return update(ref(database), updates)
+        })
     }
 }
 

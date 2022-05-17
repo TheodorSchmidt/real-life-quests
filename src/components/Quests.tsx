@@ -9,7 +9,8 @@ import { toJS } from "mobx";
 import  Quest  from "../models/Quest";
 import QuestsList from "./QuestsList";
 import Modal from "./Modal";
-
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const useStyles = createUseStyles({
     'content': {
@@ -57,6 +58,7 @@ const useStyles = createUseStyles({
         margin: "0px",
         padding: "4px",
         '& li': {
+            // width: "70px",
             display: "inline",
             marginRight: "5px",
             border: "1px solid #000",
@@ -71,17 +73,8 @@ function Quests() {
     const [modalActiveAdd, setModalActiveAdd] = useState(false);
     const [modalActiveEdit, setModalActiveEdit] = useState(false);
     const [questType, setQuestType] = useState("ACTIVE");
+    const [deadline, setDeadline] = useState(new Date());
 
-    //const []
-
-    function AddButton() {
-        addQuest();
-        setModalActiveAdd(false);
-    }
-    function EditButton() {
-        editQuest(selectedQuest?.id);
-        setModalActiveEdit(false)
-    }
     function printSelectedQuest() {
         if (selectedQuest) {
             return(
@@ -139,7 +132,7 @@ function Quests() {
                                 </div>      
                             </div>
                             <div className={classes.button}>
-                                <button id="editQuest" onClick={() => EditButton()}>Изменить</button>
+                                <button id="editQuest" onClick={() => {editQuest(selectedQuest?.id); setModalActiveEdit(false)}}>Изменить</button>
                             </div>
                         </div>
                     </Modal>
@@ -147,11 +140,11 @@ function Quests() {
             )
         }
     }
-
     return(
         <div>
             <div className={classes.menu}>
                 <ul className={classes.navigation}>
+                    <li onClick={() => {setQuestType("ALL"); cancelSelectingQuest()}}>Все</li>
                     <li onClick={() => {setQuestType("ACTIVE"); cancelSelectingQuest()}}>Активные</li>
                     <li onClick={() => {setQuestType("COMPLETED"); cancelSelectingQuest()}}>Выполненные</li>
                     <li onClick={() => {setQuestType("FAILED"); cancelSelectingQuest()}}>Проваленные</li>    
@@ -206,8 +199,12 @@ function Quests() {
                             </select>
                         </div>      
                     </div>
+                    <div>
+                        <span>Срок выполнения</span>
+                        <DatePicker id="questDeadline" selected={deadline} onChange={(date: Date) => setDeadline(date)}/>
+                    </div>
                     <div className={classes.button}>
-                        <button id="addQuest" onClick={() => AddButton()}>Добавить</button>
+                        <button id="addQuest" onClick={() => {addQuest(); setModalActiveAdd(false)}}>Добавить</button>
                     </div>
                 </div>
             </Modal>
