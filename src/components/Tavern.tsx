@@ -3,6 +3,7 @@ import { createUseStyles } from "react-jss";
 import useStore from "../hooks/useStore";
 import TavernRestList from "./TavernRestList";
 import Modal from "./Modal";
+import {observer} from "mobx-react-lite";
 
 const useStyles = createUseStyles({
     'content': {
@@ -114,4 +115,4 @@ function Tavern() {
     )
 }
 
-export default Tavern;
+export default observer(Tavern);

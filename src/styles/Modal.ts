@@ -1,0 +1,55 @@
+import { createUseStyles } from 'react-jss';
+
+export const modalStyle = createUseStyles({
+    'modal': {
+        zIndex: 5,
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: '0.5s',
+        opacity: '0',
+        pointerEvents: 'none'
+    },
+    'modal_active': {
+        zIndex: 5,
+        height: '100vh',
+        width: '100vw',
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transition: '0.5s',
+        transform: 'scale(1)',
+        opacity: '1',
+        pointerEvents: 'all',
+    },
+    'modal_content': {
+        display: 'inline-block',
+        padding: '50px',
+        paddingTop: '10px',
+        borderRadius: '12px',
+        backgroundColor: 'white',
+        width: '50wv',
+        transition: '0.4s all',
+        transform: 'scale(0.5)',
+    },
+    'modal_content_active': {
+        display: 'inline-block',
+        padding: '50px',
+        paddingTop: '10px',
+        borderRadius: '12px',
+        backgroundColor: 'white',
+        width: '50wv',
+        transition: '0.4s all',
+        transform: 'scale(1)',
+    }
+})

@@ -58,6 +58,10 @@ class Store {
     getquests() {
         return(toJS(this.quests));
     }
+
+    // ================================================================================ //
+    // ================================= QUESTS BLOCK ================================= //
+    // ================================================================================ //
     addQuest = () => {
         const questName = (<HTMLInputElement>document.querySelector('#questName')).value;
         const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficulty')).value;
@@ -81,7 +85,6 @@ class Store {
                 questData.dateDifference = Datetime.calcDaysDifference(date);
                 questData.dateModif = Datetime.calcDateCoefficient(questData.dateDifference);
                 questData.reward *= questData.dateModif;
-                //questData = this.calcDateDiff(questData);
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -121,8 +124,6 @@ class Store {
         })
     }
     selectQuest = (quest: Quest) => {
-        // if (quest.deadline && quest.status === 1) {
-        // }
         runInAction(() => {
             this.selectedQuest = quest;
         })
@@ -163,68 +164,11 @@ class Store {
                 }
                 const updates: any = {};
                 updates['/quests/' + snapshot.key] = quest;
-                runInAction(() => {
-                    this.selectedQuest = quest;
-                })
+                this.selectQuest(quest);
                 return update(ref(database), updates)
             })
         }  
     }
-    calcDateDiff = (quest: Quest) => {
-        if (quest.deadline) {
-            let currentDate = new Date();
-            if (quest.dateComplete) {
-                currentDate = new Date(quest.dateComplete);
-            } 
-            const dateDeadline = new Date(quest.deadline);
-            const dateDifference = new Date(dateDeadline.getTime() - currentDate.getTime());
-            const difference = dateDifference.getUTCDate() - 1;
-            quest.dateDifference = difference;
-            if (difference > 30) {
-                quest.dateModif = DateCoefficient["TooEarlier"];
-            } else if (difference <= 30 && difference > 14) {
-                quest.dateModif = DateCoefficient["MonthEarlier"];
-            } else if (difference <= 14 && difference > 7) {
-                quest.dateModif = DateCoefficient["TwoWeeksEarlier"];
-            } else if (difference <= 7 && difference > 3) {
-                quest.dateModif = DateCoefficient["WeekEarlier"];
-            } else if (difference <= 3 && difference > 0) {
-                quest.dateModif = DateCoefficient["ThreeDaysEarlier"];
-            } else if (difference === 0) {
-                quest.dateModif = DateCoefficient["Today"];
-            } else if (difference < 0 && difference > -3) {
-                quest.dateModif = DateCoefficient["ThreeDaysLater"];
-            } else if (difference <= -3 && difference > -7) {
-                quest.dateModif = DateCoefficient["WeekLater"];
-            } else if (difference <= -7 && difference > -14) {
-                quest.dateModif = DateCoefficient["TwoWeeksLater"];
-            } else if (difference <= -14 && difference > -30) {
-                quest.dateModif = DateCoefficient["MonthLater"];
-            } else {
-                quest.dateModif = DateCoefficient["TooLater"];
-            }
-            console.log("Текущая дата: ", currentDate);
-            console.log("Дедлайн: ", quest.deadline);
-            console.log("Дата разницы: ", dateDifference);
-            console.log("Разница: ", difference);
-            console.log("Модификатор: ", quest.dateModif);
-            console.log("Награда до: ", quest.reward);
-            quest.reward = 100 * quest.difficulty * quest.importancy * quest.motivation * quest.dateModif;
-            console.log("Награда после:", quest.reward);
-        }
-        return quest;
-    }
-    // updateDateDiff = (quest: Quest) => {
-    //     const questsRef = ref(database);
-    //     get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
-    //         let quest: Quest = snapshot.val();
-    //         quest = this.calcDateDiff(quest);
-    //         const updates: any = {};
-    //         updates['/quests/' + snapshot.key] = quest;
-    //         return update(ref(database), updates)
-    //     })
-    // }
-
     updateDateDiff = (quest: Quest) => {
         if (quest.deadline) {
             const difference = Datetime.calcDaysDifference(quest.deadline);
@@ -241,7 +185,10 @@ class Store {
             }
         }
     }
+
+    // ================================================================================ //
     // ================================= TAVERN BLOCK ================================= //
+    // ================================================================================ //
     addRest = () => {
         
     }

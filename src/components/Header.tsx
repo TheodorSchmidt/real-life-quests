@@ -1,42 +1,16 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import useStore from "../hooks/useStore";
-import { createUseStyles } from "react-jss";
-import {
-    BrowserRouter as Router,
-    Routes as Switch,
-    Route,
-    Link,
-    useParams
-} from "react-router-dom"; 
+import { Link } from "react-router-dom"; 
+import { headerStyle } from "../styles/Header";
 
-const useStyles = createUseStyles({
-    header: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "20px",
-        boxShadow: "0 0 3px 0 rgba(0, 0, 0, 0.3)",
-        backgroundColor: "white"
-    },
-    list: {
-        margin: "0px",
-        padding: "4px",
-        '& li': {
-            display: "inline",
-            marginRight: "5px",
-            border: "1px solid #000",
-            padding: "3px"
-        }
-    }
-})
 
 function Header() {
-    const classes = useStyles();
+    const header = headerStyle();
     const {coins} = useStore();
     return (
-       <div className={classes.header}>
-           <ul className={classes.list}>
+       <div className={header.header}>
+           <ul className={header.list}>
                 <li>
                     <Link to="/">Главная</Link>
                 </li>

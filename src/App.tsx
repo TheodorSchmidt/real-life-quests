@@ -7,7 +7,7 @@ import {
   Route
 } from "react-router-dom"; 
 import { observer } from 'mobx-react-lite';
-import { createUseStyles } from "react-jss";
+import { globalStyles } from "../src/styles/Global";
 import Header from './components/Header';
 import Main from './components/Main';
 import Quests from './components/Quests';
@@ -19,19 +19,8 @@ import Statistic from './components/Statistic';
 import Diary from './components/Diary';
 import Footer from './components/Footer';
 
-
-const useStyles = createUseStyles({
-  '@global': {
-    boxSizing: "border-box",
-    body: {
-      fontFamily: "sans-serif",
-      margin: "0px",
-      padding: "0px"
-    }
-  } 
-})
-
 function App() {
+  const global = globalStyles();
   return (
     <div>
       <Router>
