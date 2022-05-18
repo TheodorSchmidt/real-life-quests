@@ -79,9 +79,9 @@ function Quests() {
     function printSelectedQuest() {
         if (selectedQuest) {
             if (selectedQuest.status === 1) {
-                if (selectedQuest.deadline) {
-                    updateDateDiff(selectedQuest);
-                }
+                // if (selectedQuest.deadline) {
+                //     updateDateDiff(selectedQuest);
+                // }
                 return(
                     <div className={classes.info}>
                         <div className={classes.name}>{selectedQuest?.name}</div>

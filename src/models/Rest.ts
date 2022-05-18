@@ -1,6 +1,6 @@
 import Perk from "./Perk";
 
-enum Coefficient { VerySmall=1, Small=2, Middle=3, Big=4, VeryBig=5 }
+enum Coefficient { VerySmall=0.25, Small=0.5, Middle=1, Big=1.5, VeryBig=2 }
 
 export default interface Rest {
     name: string;

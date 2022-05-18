@@ -2,16 +2,18 @@ import { getDatabase, get, ref, onValue, child, push, update, remove } from 'fir
 import { runInAction, action, makeObservable, flow, flowResult, observable, computed, makeAutoObservable } from 'mobx';
 import { database } from '../firebase';
 import Quest from "../models/Quest";
+import Rest from "../models/Rest";
 import { Coefficient, Status } from '../models/Quest';
 import fetchQuests from "../api/fetchQuests"
 import { toJS } from 'mobx';
 import { DateCoefficient } from "../models/Quest";
+import Datetime from '../modules/Datetime';
 
 class Store {
     @observable coins: number = 0;
     @observable quests: Quest[] = [];
     @observable selectedQuest: Quest | undefined = undefined;
-
+    @observable purchases: Rest[] = [];
     constructor() {
        const questsRef = ref(database, 'quests/');
        const coinsRef = ref(database, 'coins/');
@@ -76,7 +78,10 @@ class Store {
             if (questDeadline !== "" && questDeadline !== undefined) {
                 const date = new Date(questDeadline);
                 questData.deadline = date; 
-                questData = this.calcDateDiff(questData);
+                questData.dateDifference = Datetime.calcDaysDifference(date);
+                questData.dateModif = Datetime.calcDateCoefficient(questData.dateDifference);
+                questData.reward *= questData.dateModif;
+                //questData = this.calcDateDiff(questData);
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -128,9 +133,7 @@ class Store {
         })
     }
     deleteQuest = (id: string = "default") => {
-        runInAction(() => {
-            this.selectedQuest = undefined;
-        })
+        this.cancelSelectingQuest();
         return remove(ref(database, '/quests/' + id));
     }
     editQuest = (id: string = "default") => {
@@ -151,9 +154,12 @@ class Store {
                 quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
                 quest.description = questDescription;
                 if (questDeadline !== "" && questDeadline !== undefined) {
-                    const date = new Date(questDeadline);
-                    quest.deadline = date; 
-                    quest = this.calcDateDiff(quest);
+                    const dateDeadline = new Date(questDeadline);
+                    quest.deadline = dateDeadline; 
+                    quest.dateDifference = Datetime.calcDaysDifference(dateDeadline);
+                    const coefficient = Datetime.calcDateCoefficient(quest.dateDifference);
+                    Datetime.newDateModif(quest, coefficient);
+                    // this.updateDateDiff(quest);
                 }
                 const updates: any = {};
                 updates['/quests/' + snapshot.key] = quest;
@@ -164,8 +170,7 @@ class Store {
             })
         }  
     }
-    calcDateDiff(quest: Quest) {
-        console.log(11)
+    calcDateDiff = (quest: Quest) => {
         if (quest.deadline) {
             let currentDate = new Date();
             if (quest.dateComplete) {
@@ -198,27 +203,47 @@ class Store {
             } else {
                 quest.dateModif = DateCoefficient["TooLater"];
             }
-            // console.log("Текущая дата: ", currentDate);
-            // console.log("Дедлайн: ", quest.deadline);
-            // console.log("Дата разницы: ", dateDifference);
-            // console.log("Разница: ", difference);
-            // console.log("Модификатор: ", quest.dateModif);
-            // console.log("Награда до: ", quest.reward);
+            console.log("Текущая дата: ", currentDate);
+            console.log("Дедлайн: ", quest.deadline);
+            console.log("Дата разницы: ", dateDifference);
+            console.log("Разница: ", difference);
+            console.log("Модификатор: ", quest.dateModif);
+            console.log("Награда до: ", quest.reward);
             quest.reward = 100 * quest.difficulty * quest.importancy * quest.motivation * quest.dateModif;
-            // console.log("Награда после:", quest.reward);
+            console.log("Награда после:", quest.reward);
         }
         return quest;
     }
-    updateDateDiff(quest: Quest) {
-        const questsRef = ref(database);
-        get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
-            let quest: Quest = snapshot.val();
-            console.log(quest);
-            this.calcDateDiff(quest);
-            const updates: any = {};
-            updates['/quests/' + snapshot.key] = quest;
-            return update(ref(database), updates)
-        })
+    // updateDateDiff = (quest: Quest) => {
+    //     const questsRef = ref(database);
+    //     get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
+    //         let quest: Quest = snapshot.val();
+    //         quest = this.calcDateDiff(quest);
+    //         const updates: any = {};
+    //         updates['/quests/' + snapshot.key] = quest;
+    //         return update(ref(database), updates)
+    //     })
+    // }
+
+    updateDateDiff = (quest: Quest) => {
+        if (quest.deadline) {
+            const difference = Datetime.calcDaysDifference(quest.deadline);
+            if (difference !== quest.dateDifference) {
+                const questsRef = ref(database);
+                get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
+                    let questData: Quest = snapshot.val();
+                    const coefficient = Datetime.calcDateCoefficient(difference);
+                    Datetime.newDateModif(questData, coefficient);
+                    const updates: any = {};
+                    updates['/questes/' + snapshot.key] = questData;
+                    return update(ref(database), updates);
+                })
+            }
+        }
+    }
+    // ================================= TAVERN BLOCK ================================= //
+    addRest = () => {
+        
     }
 }
 

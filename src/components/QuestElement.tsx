@@ -89,6 +89,7 @@ function QuestElement({item}: Props) {
     // if (item.deadline) {
     //     updateDateDiff(item);
     // }
+    updateDateDiff(item);
     if (item.status === 1) {
         return(
             <div className={item.id === selectedQuest?.id ? classes.questBlockSelect : classes.questBlock} onClick={() => selectQuest(item)}>
