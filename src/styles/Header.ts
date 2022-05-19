@@ -15,7 +15,7 @@ export const headerStyle = createUseStyles({
         '& li': {
             display: "inline",
             marginRight: "5px",
-            border: "1px solid #000",
+            // border: "1px solid #000",
             padding: "3px"
         }
     }

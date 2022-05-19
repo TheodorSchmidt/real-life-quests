@@ -9,21 +9,20 @@ import { toJS } from "mobx";
 import  Quest  from "../models/Quest";
 
 
-type Props = {
-    type: string,
-}
-
-function QuestsList({type}: Props) {
-    const {quests} = useStore();
+function QuestsList() {
+    const {quests, searchQuest} = useStore();
     let showedQuests = quests.slice(0);
-    if (type === "ACTIVE") {
-        showedQuests = showedQuests.filter(quest => quest.status === 1)
-    } else if (type === "COMPLETED") {
-        showedQuests = showedQuests.filter(quest => quest.status === 2)
-    } else if (type === "FAILED") {
-        showedQuests = showedQuests.filter(quest => quest.status === 3)
+
+    if (searchQuest.status !== 0) {
+        showedQuests = showedQuests.filter(quest => quest.status == searchQuest.status);
     }
-    
+    if (searchQuest.group !== "all") {
+        if (searchQuest.group === "default") {
+            showedQuests = showedQuests.filter(quest => quest.group === "default" || quest.group === undefined);
+        } else {
+            showedQuests = showedQuests.filter(quest => quest.group == searchQuest.group)
+        }
+    }
     return(
         <Virtuoso
             style={{ height: "800px", width: "100%"}}

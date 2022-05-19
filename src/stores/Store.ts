@@ -2,6 +2,7 @@ import { getDatabase, get, ref, onValue, child, push, update, remove } from 'fir
 import { runInAction, action, makeObservable, flow, flowResult, observable, computed, makeAutoObservable } from 'mobx';
 import { database } from '../firebase';
 import Quest from "../models/Quest";
+import Group from '../models/Group';
 import Rest from "../models/Rest";
 import { Coefficient, Status } from '../models/Quest';
 import fetchQuests from "../api/fetchQuests"
@@ -13,21 +14,30 @@ class Store {
     @observable coins: number = 0;
     @observable quests: Quest[] = [];
     @observable selectedQuest: Quest | undefined = undefined;
-    @observable purchases: Rest[] = [];
+    @observable groups: Group[] = [];
+    @observable searchQuest: any = {
+        status: 1,
+        group: "all"
+    }
+    // @observable purchases: Rest[] = [];
     constructor() {
-       const questsRef = ref(database, 'quests/');
        const coinsRef = ref(database, 'coins/');
-       
+       const questsRef = ref(database, 'quests/');
+       const groupsRef = ref(database, 'groups/');
+
        runInAction(() => {
            makeAutoObservable(this, {
                 coins: observable,
                 quests: observable,
                 selectedQuest: observable,
+                groups: observable,
+                searchQuest: observable,
                 updateCoins: action,
-                getquests: action,
+                getQuests: action,
                 addQuest: action,
                 deleteQuest: action,
-                completeQuest: action
+                completeQuest: action,
+                saveSearchOptions: action
             })
             onValue(coinsRef, (snapshot) => {
                 this.coins = 0;
@@ -40,6 +50,14 @@ class Store {
                 Object.keys(data).map((key) => {
                     data[key].id = key; 
                     this.quests.push(data[key]);
+                })
+            })
+            onValue(groupsRef, (snapshot) => {
+                this.groups = [];
+                const data: Group[] = snapshot.val();
+                Object.keys(data).map((key) => {
+                    data[key].id = key;
+                    this.groups.push(data[key]);
                 })
             })
        })
@@ -59,19 +77,21 @@ class Store {
     // ================================================================================ //
     // ================================= QUESTS BLOCK ================================= //
     // ================================================================================ //
-    getquests() {
+    getQuests() {
         return(toJS(this.quests));
     }
     addQuest = () => {
         const questName = (<HTMLInputElement>document.querySelector('#questName')).value;
+        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroup')).value
         const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficulty')).value;
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancy')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivation')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
-        if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
+        if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation && questGroup) {
             let questData: Quest = {
                 name: questName,
+                group: questGroup,
                 difficulty: Coefficient[questDifficulty],
                 importancy: Coefficient[questImportancy],
                 motivation: Coefficient[questMotivation],
@@ -139,6 +159,7 @@ class Store {
     editQuest = (id: string = "default") => {
         const questsRef = ref(database);
         const questName = (<HTMLInputElement>document.querySelector('#questNameE')).value;
+        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupE')).value
         const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficultyE')).value;
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancyE')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivationE')).value;
@@ -148,6 +169,7 @@ class Store {
             get(child(questsRef, `quests/${id}`)).then((snapshot) => {
                 let quest: Quest = snapshot.val();
                 quest.name = questName;
+                quest.group = questGroup;
                 quest.difficulty = Coefficient[questDifficulty];
                 quest.importancy = Coefficient[questImportancy];
                 quest.motivation = Coefficient[questMotivation];
@@ -187,6 +209,60 @@ class Store {
                 })
             }
         }
+    }
+    checkUpdates = (quest: Quest) => {
+
+    }
+    saveSearchOptions = () => {
+        const questStatus = (<HTMLSelectElement>document.querySelector('#questStatusSelect')).value;
+        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupSelect')).value;
+        runInAction(() => {
+            this.searchQuest.group = questGroup;
+            this.searchQuest.status = questStatus;
+        })
+    }
+
+    // ================================================================================ //
+    // ================================= GROUP BLOCK ================================= //
+    // ================================================================================ //
+    getGroups() {
+        return(toJS(this.groups));
+    }
+    addGroup = () => {
+        const groupName = (<HTMLInputElement>document.querySelector('#groupName')).value;
+        const groupDescription = (<HTMLTextAreaElement>document.querySelector('#groupDescription')).value;
+        if (groupName) {
+            let groupData: Group = {
+                name: groupName,
+                description: groupDescription
+            }
+            const newGroupKey = push(child(ref(database), 'groups')).key;
+            const updates: any = {};
+            updates['/groups/' + newGroupKey] = groupData;
+            return update(ref(database), updates);
+        }
+    }
+    editGroup = (id: string = "default") => {
+        const groupsRef = ref(database);
+        const groupName = (<HTMLInputElement>document.querySelector('#groupNameE')).value;
+        const groupDescription = (<HTMLTextAreaElement>document.querySelector('#groupDescriptionE')).value;
+        if (groupName) {
+            get(child(groupsRef, `groups/${id}`)).then((snapshot) => {
+                let group: Group = snapshot.val();
+                group.name = groupName;
+                group.description = groupDescription;
+                const updates: any = {};
+                updates['/groups/' + snapshot.key] = group;
+                return update(ref(database), updates)
+            })
+        }
+    }
+    deleteGroup = (id: string = "group") => {
+        this.searchQuest.group = "default";
+        return remove(ref(database, '/groups/' + id));
+    }
+    findGroupById = (id: string = "default") => {
+        return this.groups.find(group => group.id === id)
     }
 
     // ================================================================================ //

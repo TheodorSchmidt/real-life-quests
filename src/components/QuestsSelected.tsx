@@ -10,7 +10,7 @@ import Datetime from "../modules/Datetime";
 
 function QuestsSelected() {
     const quests = questsStyle();
-    const {selectedQuest, deleteQuest, editQuest, updateDateDiff} = useStore();
+    const {selectedQuest, deleteQuest, editQuest, findGroupById, updateDateDiff} = useStore();
     const [modalActiveEdit, setModalActiveEdit] = useState(false);
 
 
@@ -39,13 +39,26 @@ function QuestsSelected() {
     function printDateModif(modificator : DateCoefficient | undefined) {
         if (modificator) {
             if (modificator > 1) {
-                const percent = modificator / 10 * 100;
-                return(<div>Бонус +{modificator}%</div>)
+                const percent = Math.round(modificator * 100 - 100);
+                return(<div>Бонус +{percent}%</div>)
             } else if (modificator < 1) {
-                const percent = 100 - modificator * 100;
+                const percent = Math.round(100 - modificator * 100);
                 return(<div>Штраф -{percent}%</div>)
             } else {
                 return(<div>Бонусы и штрафы отсутствуют</div>)
+            }
+        } else {
+            return(<></>)
+        }
+    }
+
+    function printGroup(groupId : string | undefined) {
+        if (groupId) {
+            const group = findGroupById(groupId);
+            if (group) {
+                return(<div>Группа: {group.name}</div>)
+            } else {
+                return(<div>Группа: без группы</div>)
             }
         } else {
             return(<></>)
@@ -58,6 +71,7 @@ function QuestsSelected() {
             return(
                 <div className={quests.info}>
                         <div className={quests.name}>{selectedQuest?.name}</div>
+                        {printGroup(selectedQuest.group)}
                         <div>Статус: в процессе</div>
                         <div className={quests.description}>{selectedQuest?.description}</div>
                         <div>Крайний срок: {printDate(selectedQuest.deadline)}</div>
@@ -80,6 +94,7 @@ function QuestsSelected() {
             return(
                 <div className={quests.info}>
                     <div className={quests.name}>{selectedQuest?.name}</div>
+                    {printGroup(selectedQuest.group)}
                     <div>Статус: выполнено</div>
                     <div className={quests.description}>{selectedQuest?.description}</div>
                     <div>Дата выполнения: {printDate(selectedQuest.dateComplete)}</div>
@@ -91,10 +106,9 @@ function QuestsSelected() {
             return(
                 <div className={quests.info}>
                     <div className={quests.name}>{selectedQuest?.name}</div>
+                    {printGroup(selectedQuest.group)}
                     <div>Статус: провалено</div>
                     <div className={quests.description}>{selectedQuest?.description}</div>
-                    {/* <div>Дата выполнения: {Datetime.dateToString(selectedQuest?.dateComplete)}</div>
-                    <div>Полученные очки: {selectedQuest.reward}</div> */}
                     <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить запись</button>
                 </div>
             )

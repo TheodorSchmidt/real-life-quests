@@ -9,5 +9,5 @@ export const globalStyles = createUseStyles({
         padding: "0px"
       }
     } 
-  })
+})
   

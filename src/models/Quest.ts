@@ -1,3 +1,4 @@
+import Group from "./Group";
 import Character from "./Character";
 import Location from "./Location";
 import Perk from "./Perk";
@@ -11,6 +12,7 @@ export enum Status { ACTIVE=1, COMPLETED=2, FAILED=3 }
 export default interface Quest {
     id?: string;
     name: string;
+    group?: string;
     description?: string;
     difficulty: Coefficient; 
     importancy: Coefficient; 

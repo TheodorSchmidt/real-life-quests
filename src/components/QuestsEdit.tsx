@@ -4,11 +4,17 @@ import {observer} from "mobx-react-lite";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { questsStyle } from "../styles/Quests";
+import Group from "../models/Group";
 
 function QuestsEdit() {
     const quests = questsStyle();
-    const {selectedQuest} = useStore();
+    const {selectedQuest, groups} = useStore();
     const [deadline, setDeadline] = useState(new Date());
+
+    function printGroup(group : Group) {
+        return(<option value={group.id}>{group.name}</option>)
+    }
+
     if (selectedQuest) {
         return(
             <div>
@@ -20,6 +26,12 @@ function QuestsEdit() {
                         defaultValue={selectedQuest.name}
                         placeholder="Введите название *"
                     />
+                </div>
+                <div className={quests.selectItem}>
+                    <select id="questGroupE" name="group">
+                        <option selected value="default">Без группы</option>
+                        {groups.map(g => printGroup(g))}
+                    </select>
                 </div>
                 <div key={selectedQuest.description}>
                     <div>

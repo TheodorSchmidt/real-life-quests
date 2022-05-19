@@ -1,12 +1,20 @@
 import React, { useState } from "react";
+import useStore from "../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { questsStyle } from "../styles/Quests";
+import Group from "../models/Group";
 
 function QuestsAdd() {
     const quests = questsStyle();
-    const [deadline, setDeadline] = useState(new Date());
+    const [deadline, setDeadline,] = useState(new Date());
+    const {groups} = useStore();
+
+    function printGroup(group : Group) {
+        return(<option value={group.id}>{group.name}</option>)
+    }
+    
     return(
         <div>
             <p>Создать квест</p>
@@ -15,6 +23,12 @@ function QuestsAdd() {
                 type="text"
                 placeholder="Введите название *"
             />
+            <div className={quests.selectItem}>
+                <select id="questGroup" name="group">
+                    <option selected value="default">Без группы</option>
+                    {groups.map(g => printGroup(g))}
+                </select>
+            </div>
             <div>
                 <textarea id="questDescription" placeholder="Введите описание"></textarea>
             </div>

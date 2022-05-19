@@ -7,6 +7,11 @@ export const questsStyle = createUseStyles({
         paddingLeft: "110px",
         transform: 'scale(2)'
     },
+    'headline': {
+        fontSize: '22',
+        fontStyle: 'bold',
+        maxWidth: '200px'
+    },
     'select': {
         padding: "20px 0px",
     },
@@ -17,6 +22,7 @@ export const questsStyle = createUseStyles({
         justifyContent: 'right',
     },
     'list': {
+        display: 'inline-block',
         width: '47%',
         minWidth: '250px'
     },
@@ -50,7 +56,7 @@ export const questsStyle = createUseStyles({
             // width: "70px",
             display: "inline",
             marginRight: "5px",
-            border: "1px solid #000",
+            // border: "1px solid #000",
             padding: "3px"
         }
     }
