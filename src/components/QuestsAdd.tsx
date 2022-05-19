@@ -14,7 +14,7 @@ function QuestsAdd() {
     function printGroup(group : Group) {
         return(<option value={group.id}>{group.name}</option>)
     }
-    
+
     return(
         <div>
             <p>Создать квест</p>
@@ -55,7 +55,7 @@ function QuestsAdd() {
                 </div>
                 <div className={quests.selectItem}>
                     <select id="questMotivation" name="motivation">
-                        <option selected disabled value="0">Выберите важность *</option>
+                        <option selected disabled value="0">Выберите замотивированность *</option>
                         <option value="VeryBig">1 (Совсем не хочу делать)</option>
                         <option value="Big">2 (Не хочу делать)</option>
                         <option value="Middle">3 (Не очень хочу делать)</option>

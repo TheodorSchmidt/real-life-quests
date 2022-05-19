@@ -210,8 +210,16 @@ class Store {
             }
         }
     }
-    checkUpdates = (quest: Quest) => {
-
+    //
+    makeAttrDefault = (id: string, attr: string) => {
+        const questsRef = ref(database);
+        get(child(questsRef, `quests/${id}`)).then((snapshot) => {
+            let quest: Quest = snapshot.val();
+            quest[attr] = 'default';
+            const updates: any = {};
+            updates['/quests/' + snapshot.key] = quest;
+            return update(ref(database), updates)
+        })  
     }
     saveSearchOptions = () => {
         const questStatus = (<HTMLSelectElement>document.querySelector('#questStatusSelect')).value;
@@ -259,6 +267,13 @@ class Store {
     }
     deleteGroup = (id: string = "group") => {
         this.searchQuest.group = "default";
+        const searching = this.quests.filter(quest => quest.group === id);
+        // console.log(toJS(searching));
+        searching.forEach(quest => {
+            // console.log(toJS(quest));
+            if (quest.id)
+            this.makeAttrDefault(quest.id, "group");
+        })
         return remove(ref(database, '/groups/' + id));
     }
     findGroupById = (id: string = "default") => {

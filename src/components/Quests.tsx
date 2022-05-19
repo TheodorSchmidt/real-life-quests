@@ -39,7 +39,7 @@ function Quests() {
                     <li>
                         <select id="questGroupSelect" name="group">
                             <option selected value="all">Все</option>
-                            <option selected value="default">Без группы</option>
+                            <option value="default">Без группы</option>
                             {groups.map(g => printGroup(g))}
                         </select>
                     </li>
