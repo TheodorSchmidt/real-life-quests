@@ -55,13 +55,13 @@ class Store {
             return update(ref(database), updates);
         })
     }
-    getquests() {
-        return(toJS(this.quests));
-    }
 
     // ================================================================================ //
     // ================================= QUESTS BLOCK ================================= //
     // ================================================================================ //
+    getquests() {
+        return(toJS(this.quests));
+    }
     addQuest = () => {
         const questName = (<HTMLInputElement>document.querySelector('#questName')).value;
         const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficulty')).value;
@@ -75,7 +75,7 @@ class Store {
                 difficulty: Coefficient[questDifficulty],
                 importancy: Coefficient[questImportancy],
                 motivation: Coefficient[questMotivation],
-                reward: 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation],
+                reward: Math.round(100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation]),
                 description: questDescription,
                 status: Status["ACTIVE"]
             }
@@ -84,7 +84,7 @@ class Store {
                 questData.deadline = date; 
                 questData.dateDifference = Datetime.calcDaysDifference(date);
                 questData.dateModif = Datetime.calcDateCoefficient(questData.dateDifference);
-                questData.reward *= questData.dateModif;
+                questData.reward = Math.round(questData.reward * questData.dateModif);
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -119,7 +119,6 @@ class Store {
             this.cancelSelectingQuest();
             const updates: any = {};
             updates['/quests/' + snapshot.key] = quest;
-            console.log(quest);
             return update(ref(database), updates)
         })
     }
@@ -172,14 +171,18 @@ class Store {
     updateDateDiff = (quest: Quest) => {
         if (quest.deadline) {
             const difference = Datetime.calcDaysDifference(quest.deadline);
+            // console.log("Новая разница: ", difference);
+            // console.log("Старая разница: ", quest.dateDifference);
             if (difference !== quest.dateDifference) {
                 const questsRef = ref(database);
                 get(child(questsRef, `quests/${quest.id}`)).then((snapshot) => {
                     let questData: Quest = snapshot.val();
                     const coefficient = Datetime.calcDateCoefficient(difference);
+                    // console.log("Старый коэффициент: ", questData.dateModif, " , новый коэффициент: ", coefficient);
                     Datetime.newDateModif(questData, coefficient);
+                    questData.dateDifference = difference;
                     const updates: any = {};
-                    updates['/questes/' + snapshot.key] = questData;
+                    updates['/quests/' + snapshot.key] = questData;
                     return update(ref(database), updates);
                 })
             }

@@ -1,18 +1,19 @@
 import { DateCoefficient } from "../models/Quest";
 import Quest from "../models/Quest";
 const Datetime = {
-    today: () => {
-        let today = new Date();
-        const dd = String(today.getDate()).padStart(2, '0');
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const yyyy = today.getFullYear();
-        const todayStr = mm + '/' + dd + '/' + yyyy;
-        return todayStr;
+    dateToString: (date: Date) => {
+        const dateForm = new Date(date);
+        const dd = String(dateForm.getDate()).padStart(2, '0');
+        const mm = String(dateForm.getMonth() + 1).padStart(2, '0');
+        const yyyy = dateForm.getFullYear();
+        const dateString = mm + '/' + dd + '/' + yyyy;
+        return dateString;
     },
     calcDaysDifference: (date: Date) => {
         let today = new Date();
         let deadline = new Date(date);
         let timeDiff = deadline.getTime() - today.getTime();
+        // console.log("Дедлайн: ", Datetime.dateToString(deadline), " , сегодня: ", Datetime.dateToString(today))
         return (Math.ceil(timeDiff / (1000 * 3600 * 24)))
     },
     calcDateCoefficient: (difference: number) => {
@@ -47,7 +48,7 @@ const Datetime = {
             quest.reward /= quest.dateModif;
         } 
         quest.dateModif = modif;
-        quest.reward *= quest.dateModif;
+        quest.reward = Math.round(quest.reward * quest.dateModif);
     }
 }
 
