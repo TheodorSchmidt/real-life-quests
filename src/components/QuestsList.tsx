@@ -13,7 +13,7 @@ function QuestsList() {
     const {quests, searchQuest} = useStore();
     let showedQuests = quests.slice(0);
 
-    if (searchQuest.status !== 0) {
+    if (searchQuest.status != 0) {
         showedQuests = showedQuests.filter(quest => quest.status == searchQuest.status);
     }
     if (searchQuest.group !== "all") {
@@ -25,7 +25,7 @@ function QuestsList() {
     }
     return(
         <Virtuoso
-            style={{ height: "800px", width: "100%"}}
+            style={{ height: "800px", width: "100%" }}
             data={showedQuests}
             itemContent={(index) => {
                 return(

@@ -221,6 +221,11 @@ class Store {
             return update(ref(database), updates)
         })  
     }
+    setSearchOptions = (attr: string, value: string) => {
+        runInAction(() => {
+            this.searchQuest[attr] = value;
+        })
+    }
     saveSearchOptions = () => {
         const questStatus = (<HTMLSelectElement>document.querySelector('#questStatusSelect')).value;
         const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupSelect')).value;

@@ -15,21 +15,32 @@ import { buttonStyle } from "../styles/Button";
 function Quests() {
     const quests = questsStyle();
     const buttons = buttonStyle();
-    const {addQuest, addGroup, cancelSelectingQuest, groups, saveSearchOptions, searchQuest, findGroupById} = useStore();
+    const {addQuest, addGroup, groups, saveSearchOptions, setSearchOptions} = useStore();
     const [modalActiveAddQuest, setModalActiveAddQuest] = useState(false);
     const [modalActiveAddGroup, setModalActiveAddGroup] = useState(false);
 
     function printGroup(group : Group) {
         return(<option value={group.id}>{group.name}</option>)
     }
+
+    const filterStatus: HTMLSelectElement | null = document.querySelector('#questStatusFilter');
+    filterStatus?.addEventListener('change', function() {
+        setSearchOptions("status", this.value);
+    })
+    const filterGroup: HTMLSelectElement | null = document.querySelector('#questGroupFilter');
+    filterGroup?.addEventListener('change', function() {
+        setSearchOptions("group", this.value);
+    })
+
     return(
         <div>
             <button id="createQuest" onClick={() => setModalActiveAddQuest(true)}>Создать квест</button>
             <button id="createGroup" onClick={() => setModalActiveAddGroup(true)}>Создать группу</button>
             <div className={quests.menu}>
                 <ul className={quests.navigation}>
+                    <li>Фильтрация</li>
                     <li>   
-                        <select id="questStatusSelect" name="status">
+                        <select id="questStatusFilter" name="status">
                             <option value="0">Все</option>
                             <option selected value="1">Активные</option>
                             <option value="2">Выполненные</option>
@@ -37,14 +48,11 @@ function Quests() {
                         </select>
                     </li>
                     <li>
-                        <select id="questGroupSelect" name="group">
+                        <select id="questGroupFilter" name="group">
                             <option selected value="all">Все</option>
                             <option value="default">Без группы</option>
                             {groups.map(g => printGroup(g))}
                         </select>
-                    </li>
-                    <li>
-                        <button id="search" onClick={() => saveSearchOptions()}>Поиск</button>
                     </li>
                 </ul>
             </div>
