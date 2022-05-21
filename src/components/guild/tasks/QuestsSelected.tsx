@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import useStore from "../hooks/useStore";
+import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import  Quest, { DateCoefficient }  from "../models/Quest";
-import Modal from "./Modal";
+import  Quest, { DateCoefficient }  from "../../../models/Quest";
+import Modal from "../../Modal";
 import "react-datepicker/dist/react-datepicker.css";
-import { questsStyle } from "../styles/Quests";
+import { questsStyle } from "../../../styles/Guild";
 import QuestsEdit from "./QuestsEdit";
-import Datetime from "../modules/Datetime";
+import Datetime from "../../../modules/Datetime";
 
 function QuestsSelected() {
     const quests = questsStyle();

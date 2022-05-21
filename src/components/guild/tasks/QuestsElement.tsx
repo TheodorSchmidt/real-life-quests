@@ -1,17 +1,17 @@
 import React, {useState} from "react";
-import useStore from "../hooks/useStore";
+import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import  Quest  from "../models/Quest";
+import  Quest  from "../../../models/Quest";
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { questsElementStyle } from "../styles/Quests";
+import { questsElementStyle } from "../../../styles/Guild";
 
 type Props = {
     item: Quest
 }
 
-function QuestElement({item}: Props) {
+function QuestsElement({item}: Props) {
     const questsElement = questsElementStyle();
     const {completeQuest, selectQuest, selectedQuest, updateDateDiff} = useStore();
     updateDateDiff(item);
@@ -49,4 +49,4 @@ function QuestElement({item}: Props) {
 }
 
 
-export default observer(QuestElement);
+export default observer(QuestsElement);

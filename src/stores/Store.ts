@@ -182,6 +182,10 @@ class Store {
                     const coefficient = Datetime.calcDateCoefficient(quest.dateDifference);
                     Datetime.newDateModif(quest, coefficient);
                     // this.updateDateDiff(quest);
+                } else {
+                    delete quest.deadline;
+                    delete quest.dateDifference;
+                    delete quest.dateModif;
                 }
                 const updates: any = {};
                 updates['/quests/' + snapshot.key] = quest;

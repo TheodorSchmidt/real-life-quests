@@ -1,12 +1,12 @@
 import React from "react";
 import { createUseStyles } from "react-jss";
-import useStore from "../hooks/useStore";
+import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import QuestElement from "./QuestElement";
+import QuestsElement from "./QuestsElement";
 import {map} from "lodash";
 import { Virtuoso } from "react-virtuoso";
 import { toJS } from "mobx";
-import  Quest  from "../models/Quest";
+import  Quest  from "../../../models/Quest";
 
 
 function QuestsList() {
@@ -29,7 +29,7 @@ function QuestsList() {
             data={showedQuests}
             itemContent={(index) => {
                 return(
-                    <QuestElement item={showedQuests[index]} />
+                    <QuestsElement item={showedQuests[index]} />
                 )}
             }
         />

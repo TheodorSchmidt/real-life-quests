@@ -15,7 +15,7 @@ function Header() {
                     <Link to="/">Главная</Link>
                 </li>
                 <li>
-                    <Link to="/quests">Квесты</Link>
+                    <Link to="/guild">Гильдия</Link>
                 </li>
                 <li>
                     <Link to="/perks">Навыки</Link>

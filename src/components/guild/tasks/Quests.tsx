@@ -1,16 +1,22 @@
 import React, { useState } from "react";
-import useStore from "../hooks/useStore";
+import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import QuestsList from "./QuestsList";
-import Modal from "./Modal";
+import Modal from "../../Modal";
 import "react-datepicker/dist/react-datepicker.css";
-import { questsStyle } from "../styles/Quests";
+import { questsStyle } from "../../../styles/Guild";
 import QuestsSelected from "./QuestsSelected";
 import QuestsAdd from "./QuestsAdd";
-import Group from "../models/Group";
-import QuestsGroup from "./QuestsGroup";
+import Group from "../../../models/Group";
 import EditIcon from '@mui/icons-material/Edit'
-import { buttonStyle } from "../styles/Button";
+import { buttonStyle } from "../../../styles/Button";
+import {
+    BrowserRouter as Router,
+    Routes as Switch,
+    Route,
+    Link,
+    Outlet
+} from "react-router-dom"; 
 
 function Quests() {
     const quests = questsStyle();
@@ -35,7 +41,6 @@ function Quests() {
     return(
         <div>
             <button id="createQuest" onClick={() => setModalActiveAddQuest(true)}>Создать квест</button>
-            <button id="createGroup" onClick={() => setModalActiveAddGroup(true)}>Создать группу</button>
             <div className={quests.menu}>
                 <ul className={quests.navigation}>
                     <li>Фильтрация</li>
@@ -56,7 +61,6 @@ function Quests() {
                     </li>
                 </ul>
             </div>
-            <QuestsGroup/>
             <QuestsSelected/>
             <div className={quests.list}>
                 <QuestsList/>
@@ -66,24 +70,6 @@ function Quests() {
                     <QuestsAdd />
                     <div className={quests.button}>
                         <button id="addQuest" onClick={() => {addQuest(); setModalActiveAddQuest(false)}}>Добавить</button>
-                    </div>
-                </div>
-            </Modal>
-            <Modal active={modalActiveAddGroup} setActive={setModalActiveAddGroup}>
-                <div className={quests.content}>
-                    <div>
-                        <p>Создать группу</p>
-                        <input 
-                            id="groupName"
-                            type="text"
-                            placeholder="Введите название *"
-                        />
-                        <div>
-                            <textarea id="groupDescription" placeholder="Введите описание"></textarea>
-                        </div>
-                    </div>
-                    <div className={quests.button}>
-                        <button id="addGroup" onClick={() => {addGroup(); setModalActiveAddGroup(false)}}>Создать группу</button>
                     </div>
                 </div>
             </Modal>

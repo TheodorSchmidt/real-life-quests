@@ -6,8 +6,8 @@ export default interface Rest {
     name: string;
     description?: string;
     icon?: string;
-    satisfaction: Coefficient;
-    benefit: Coefficient;
+    satisfaction?: Coefficient;
+    benefit?: Coefficient;
     cost: number;
     perks?: Perk[];
     expirience?: number;

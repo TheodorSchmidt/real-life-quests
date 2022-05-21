@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import useStore from "../hooks/useStore";
+import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { questsStyle } from "../styles/Quests";
-import Group from "../models/Group";
+import { questsStyle } from "../../../styles/Guild";
+import Group from "../../../models/Group";
 
 function QuestsAdd() {
     const quests = questsStyle();
-    const [deadline, setDeadline,] = useState(new Date());
+    const [deadline, setDeadline] = useState(new Date());
     const {groups} = useStore();
 
     function printGroup(group : Group) {
@@ -40,7 +40,7 @@ function QuestsAdd() {
                         <option value="Small">2 (Просто)</option>
                         <option value="Middle">3 (Средне)</option>
                         <option value="Big">4 (Сложно)</option>
-                        <option value="VeryBig">5 (Сложно)</option>
+                        <option value="VeryBig">5 (Очень сложно)</option>
                     </select>
                 </div>
                 <div className={quests.selectItem}>
