@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import useStore from "../../hooks/useStore";
-import TavernRests from "./rests/TavernRests";
-import TavernPurchases from "./purchases/TavernPurchases";
+import Rests from "./rests/Rests";
+import Purchases from "./purchases/Purchases";
 import Modal from "../Modal";
 import {observer} from "mobx-react-lite";
 import { tavernStyle } from "../../styles/Tavern";

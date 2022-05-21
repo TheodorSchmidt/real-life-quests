@@ -9,6 +9,7 @@ import fetchQuests from "../api/fetchQuests"
 import { toJS } from 'mobx';
 import { DateCoefficient } from "../models/Quest";
 import Datetime from '../modules/Datetime';
+import Purchase from '../models/Purchase';
 
 class Store {
     @observable coins: number = 0;
@@ -19,25 +20,38 @@ class Store {
         status: 1,
         group: "all"
     }
-    // @observable purchases: Rest[] = [];
+    @observable rests: Rest[] = [];
+    @observable purchases: Purchase[] = [];
+
     constructor() {
        const coinsRef = ref(database, 'coins/');
        const questsRef = ref(database, 'quests/');
        const groupsRef = ref(database, 'groups/');
-
+       const restsRef = ref(database, 'rests/');
+       const purchasesRef = ref(database, 'purchases/');
        runInAction(() => {
            makeAutoObservable(this, {
                 coins: observable,
                 quests: observable,
                 selectedQuest: observable,
-                groups: observable,
                 searchQuest: observable,
+                groups: observable,
+                rests: observable,
+                purchases: observable,
                 updateCoins: action,
+
                 getQuests: action,
+                getGroups: action,
+                getRests: action,
+                getPurchases: action,
                 addQuest: action,
+                addGroup: action,
+                addRest: action,
+                addPurchase: action,
                 deleteQuest: action,
+                deleteGroup: action,
+                deleteRest: action,
                 completeQuest: action,
-                saveSearchOptions: action
             })
             onValue(coinsRef, (snapshot) => {
                 this.coins = 0;
@@ -60,9 +74,29 @@ class Store {
                     this.groups.push(data[key]);
                 })
             })
+            onValue(restsRef, (snapshot) => {
+                this.rests = [];
+                const data: Rest[] = snapshot.val();
+                Object.keys(data).map((key) => {
+                    data[key].id = key;
+                    this.rests.push(data[key]);
+                })
+            })
+            onValue(purchasesRef, (snapshot) => {
+                this.purchases = [];
+                const data: Purchase[] = snapshot.val();
+                Object.keys(data).map((key) => {
+                    data[key].id = key;
+                    this.purchases.push(data[key]);
+                })
+            })
+
        })
     }
 
+    getCoins = () => {
+        return(toJS(this.coins));
+    }
     updateCoins = (sum: number = 0) => {
         const coinsRef = ref(database);
         get(child(coinsRef, 'coins')).then((snapshot) => {
@@ -73,11 +107,11 @@ class Store {
             return update(ref(database), updates);
         })
     }
-
+    
     // ================================================================================ //
     // ================================= QUESTS BLOCK ================================= //
     // ================================================================================ //
-    getQuests() {
+    getQuests = () => {
         return(toJS(this.quests));
     }
     addQuest = () => {
@@ -111,6 +145,48 @@ class Store {
             updates['/quests/' + newQuestKey] = questData;
             return update(ref(database), updates);
         }
+    }
+    editQuest = (id: string = "default") => {
+        const questsRef = ref(database);
+        const questName = (<HTMLInputElement>document.querySelector('#questNameE')).value;
+        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupE')).value
+        const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficultyE')).value;
+        const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancyE')).value;
+        const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivationE')).value;
+        const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescriptionE')).value;
+        const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadlineE')).value;
+        if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
+            get(child(questsRef, `quests/${id}`)).then((snapshot) => {
+                let quest: Quest = snapshot.val();
+                quest.name = questName;
+                quest.group = questGroup;
+                quest.difficulty = Coefficient[questDifficulty];
+                quest.importancy = Coefficient[questImportancy];
+                quest.motivation = Coefficient[questMotivation];
+                quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
+                quest.description = questDescription;
+                if (questDeadline !== "" && questDeadline !== undefined) {
+                    const dateDeadline = new Date(questDeadline);
+                    quest.deadline = dateDeadline; 
+                    quest.dateDifference = Datetime.calcDaysDifference(dateDeadline);
+                    const coefficient = Datetime.calcDateCoefficient(quest.dateDifference);
+                    Datetime.newDateModif(quest, coefficient);
+                    // this.updateDateDiff(quest);
+                } else {
+                    delete quest.deadline;
+                    delete quest.dateDifference;
+                    delete quest.dateModif;
+                }
+                const updates: any = {};
+                updates['/quests/' + snapshot.key] = quest;
+                this.selectQuest(quest);
+                return update(ref(database), updates)
+            })
+        }  
+    }
+    deleteQuest = (id: string = "default") => {
+        this.cancelSelectingQuest();
+        return remove(ref(database, '/quests/' + id));
     }
     completeQuest = (id: string = "default", complete: boolean, cancel: boolean) => {
         const questsRef = ref(database);
@@ -152,48 +228,6 @@ class Store {
             this.selectedQuest = undefined;
         })
     }
-    deleteQuest = (id: string = "default") => {
-        this.cancelSelectingQuest();
-        return remove(ref(database, '/quests/' + id));
-    }
-    editQuest = (id: string = "default") => {
-        const questsRef = ref(database);
-        const questName = (<HTMLInputElement>document.querySelector('#questNameE')).value;
-        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupE')).value
-        const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficultyE')).value;
-        const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancyE')).value;
-        const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivationE')).value;
-        const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescriptionE')).value;
-        const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadlineE')).value;
-        if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
-            get(child(questsRef, `quests/${id}`)).then((snapshot) => {
-                let quest: Quest = snapshot.val();
-                quest.name = questName;
-                quest.group = questGroup;
-                quest.difficulty = Coefficient[questDifficulty];
-                quest.importancy = Coefficient[questImportancy];
-                quest.motivation = Coefficient[questMotivation];
-                quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
-                quest.description = questDescription;
-                if (questDeadline !== "" && questDeadline !== undefined) {
-                    const dateDeadline = new Date(questDeadline);
-                    quest.deadline = dateDeadline; 
-                    quest.dateDifference = Datetime.calcDaysDifference(dateDeadline);
-                    const coefficient = Datetime.calcDateCoefficient(quest.dateDifference);
-                    Datetime.newDateModif(quest, coefficient);
-                    // this.updateDateDiff(quest);
-                } else {
-                    delete quest.deadline;
-                    delete quest.dateDifference;
-                    delete quest.dateModif;
-                }
-                const updates: any = {};
-                updates['/quests/' + snapshot.key] = quest;
-                this.selectQuest(quest);
-                return update(ref(database), updates)
-            })
-        }  
-    }
     updateDateDiff = (quest: Quest) => {
         if (quest.deadline) {
             const difference = Datetime.calcDaysDifference(quest.deadline);
@@ -214,7 +248,6 @@ class Store {
             }
         }
     }
-    //
     makeAttrDefault = (id: string, attr: string) => {
         const questsRef = ref(database);
         get(child(questsRef, `quests/${id}`)).then((snapshot) => {
@@ -230,19 +263,12 @@ class Store {
             this.searchQuest[attr] = value;
         })
     }
-    saveSearchOptions = () => {
-        const questStatus = (<HTMLSelectElement>document.querySelector('#questStatusSelect')).value;
-        const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupSelect')).value;
-        runInAction(() => {
-            this.searchQuest.group = questGroup;
-            this.searchQuest.status = questStatus;
-        })
-    }
+    
 
     // ================================================================================ //
     // ================================= GROUP BLOCK ================================= //
     // ================================================================================ //
-    getGroups() {
+    getGroups = () => {
         return(toJS(this.groups));
     }
     addGroup = () => {
@@ -290,11 +316,107 @@ class Store {
     }
 
     // ================================================================================ //
-    // ================================= TAVERN BLOCK ================================= //
+    // ================================ RESTS BLOCK =================================== //
     // ================================================================================ //
-    addRest = () => {
-        
+    getRests = () => {
+        return(toJS(this.rests));
     }
+    addRest = () => {
+        const restName = (<HTMLInputElement>document.querySelector('#restName')).value;
+        const restDescription = (<HTMLTextAreaElement>document.querySelector('#restDescription')).value;
+        const restCost = (<HTMLInputElement>document.querySelector('#restCost')).value;
+        if (restName && restCost) {
+            let restData: Rest = {
+                name: restName,
+                description: restDescription,
+                cost: Number(restCost)
+            }
+            const newRestKey = push(child(ref(database), 'rests')).key;
+            const updates: any = {};
+            updates['/rests/' + newRestKey] = restData;
+            return update(ref(database), updates);
+        }
+    }
+    editRest = (id: string = "default") => {
+        const restsRef = ref(database);
+        const restName = (<HTMLInputElement>document.querySelector('#restNameE')).value;
+        const restDescription = (<HTMLTextAreaElement>document.querySelector('#restDescriptionE')).value;
+        const restCost = (<HTMLInputElement>document.querySelector('#restCost')).value;
+        if (restName) {
+            get(child(restsRef, `rests/${id}`)).then((snapshot) => {
+                let restData: Rest = snapshot.val();
+                restData.name = restName;
+                restData.description = restDescription;
+                restData.cost = Number(restCost);
+                const updates: any = {};
+                updates['/rests/' + snapshot.key] = restData;
+                return update(ref(database), updates)
+            })
+        }
+    }
+    deleteRest = (id: string = "default") => {
+        return remove(ref(database, '/rests/' + id));
+    }
+    findRestById = (id: string = "default") => {
+        return this.rests.find(rest => rest.id === id);
+    }
+
+    // ================================================================================ //
+    // =============================== PURCHASES BLOCK ================================ //
+    // ================================================================================ //
+    getPurchases = () => {
+        return(toJS(this.purchases));
+    }
+    addPurchase = () => {
+        const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseName')).value;
+        const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutes')).value;
+        const rest = this.findRestById(purchaseName);
+        if (rest && purchaseMinutes) {
+            let purchaseData: Purchase = {
+                name: rest.name,
+                restId: rest.id,
+                description: rest.description,
+                cost: rest.cost,
+                minutes: Number(purchaseMinutes),
+                price: rest.cost * Number(purchaseMinutes),
+                dateBuy: new Date()
+            }
+            this.updateCoins(-purchaseData.price);
+            const newPurchaseKey = push(child(ref(database), 'purchases')).key;
+            const updates: any = {};
+            updates['/purchases/' + newPurchaseKey] = purchaseData;
+            return update(ref(database), updates);
+        }
+    }
+    editPurchase = (id: string = "default") => {
+        const purchasesRef = ref(database);
+        const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseNameE')).value;
+        const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutesE')).value;
+        const rest = this.findRestById(purchaseName);
+        if (rest && purchaseMinutes) {
+            get(child(purchasesRef, `purchases/${id}`)).then((snapshot) => {
+                let purchaseData: Purchase = snapshot.val();
+                this.updateCoins(+purchaseData.price);
+                purchaseData.name = rest.name;
+                purchaseData.restId = rest.id;
+                purchaseData.description = rest.description;
+                purchaseData.cost = rest.cost;
+                purchaseData.minutes = Number(purchaseMinutes);
+                purchaseData.price = rest.cost * Number(purchaseMinutes);
+                const updates: any = {};
+                updates['/purchases/' + snapshot.key] = purchaseData;
+                return update(ref(database), updates)
+            })
+        }
+    }
+    deletePurchase = (id: string = "default") => {
+        return remove(ref(database, '/purchases/' + id));
+    }
+    cancelPurchase = (purchase: Purchase) => {
+        this.updateCoins(+purchase.price);
+        return remove(ref(database, '/purchases/' + purchase.id));
+    }
+
 }
 
 export default Store;

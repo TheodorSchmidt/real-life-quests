@@ -21,7 +21,7 @@ import {
 function Quests() {
     const quests = questsStyle();
     const buttons = buttonStyle();
-    const {addQuest, addGroup, groups, saveSearchOptions, setSearchOptions} = useStore();
+    const {addQuest, addGroup, groups, setSearchOptions} = useStore();
     const [modalActiveAddQuest, setModalActiveAddQuest] = useState(false);
     const [modalActiveAddGroup, setModalActiveAddGroup] = useState(false);
 

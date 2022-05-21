@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import  Quest, { DateCoefficient }  from "../../../models/Quest";
+import  { DateCoefficient }  from "../../../models/Quest";
 import Modal from "../../Modal";
 import "react-datepicker/dist/react-datepicker.css";
 import { questsStyle } from "../../../styles/Guild";

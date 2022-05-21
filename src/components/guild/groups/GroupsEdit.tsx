@@ -1,7 +1,4 @@
-import React, {useState} from "react";
-import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import { questsStyle } from "../../../styles/Guild";
 import Group from "../../../models/Group";
 
 type Props = {
@@ -9,7 +6,6 @@ type Props = {
 }
 
 function GroupsEdit({item}: Props) {
-
     return(
         <div>
             <p>Изменить группу</p>

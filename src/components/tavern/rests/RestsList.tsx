@@ -3,21 +3,21 @@ import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import "react-datepicker/dist/react-datepicker.css";
 import { Virtuoso } from "react-virtuoso";
-import GroupsElement from "./GroupsElement";
+import RestsElement from "./RestsElement";
 
-function GroupsList() {
-    const {groups} = useStore();
+function RestsList() {
+    const {rests} = useStore();
     return(
         <Virtuoso
             style={{ height: "800px", width: "100%" }}
-            data={groups}
+            data={rests}
             itemContent={(index) => {
                 return(
-                    <GroupsElement item={groups[index]} />
+                    <RestsElement item={rests[index]} />
                 )}
             }
         />
     )
 }
 
-export default observer(GroupsList);
+export default observer(RestsList);

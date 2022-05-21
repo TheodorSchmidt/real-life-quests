@@ -61,3 +61,74 @@ export const tavernStyle = createUseStyles({
         }
     }
 })
+
+export const tavernElementStyle = createUseStyles({
+    'buttonComplete': {
+        color: 'black',
+        float: 'right',
+        '&:hover': {
+            color: 'green'
+        }
+    },
+    'buttonFailed': {
+        color: 'black',
+        float: 'right',
+        '&:hover': {
+            color: 'red'
+        }
+    },
+    'buttonCancel': {
+        color: 'black',
+        float: 'right',
+        '&:hover': {
+            color: 'blue'
+        }
+    },
+    'questBlock': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid'
+    },
+    'questBlockSelect': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid',
+        backgroundColor: 'grey'
+    },
+    'questBlockCompleted': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid',
+        backgroundColor: '#3de369'
+    },
+    'questBlockCompletedSelect': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid',
+        backgroundColor: '#114d21'
+    },
+    'questBlockFailed': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid',
+        backgroundColor: '#ff5447'
+    },
+    'questBlockFailedSelect': {
+        padding: '25px',
+        paddingRight: '5px',
+        paddingLeft: '5px',
+        margin: '5px',
+        border: '3px solid',
+        backgroundColor: '#941a0f'
+    }
+})

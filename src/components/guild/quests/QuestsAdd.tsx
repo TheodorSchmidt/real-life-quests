@@ -11,7 +11,7 @@ function QuestsAdd() {
     const [deadline, setDeadline] = useState(new Date());
     const {groups} = useStore();
 
-    function printGroup(group : Group) {
+    function printGroup(group: Group) {
         return(<option value={group.id}>{group.name}</option>)
     }
 

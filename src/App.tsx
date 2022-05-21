@@ -12,7 +12,7 @@ import { globalStyles } from "../src/styles/Global";
 import Header from './components/Header';
 import Main from './components/Main';
 import Guild from './components/guild/Guild';
-import Quests from './components/guild/tasks/Quests';
+import Quests from './components/guild/quests/Quests';
 import Groups from './components/guild/groups/Groups';
 import Characters from './components/Characters';
 import Locations from './components/Locations';
@@ -21,8 +21,8 @@ import Tavern from './components/tavern/Tavern';
 import Statistic from './components/Statistic';
 import Diary from './components/Diary';
 import Footer from './components/Footer';
-import TavernRests from './components/tavern/rests/TavernRests';
-import TavernPurchases from './components/tavern/purchases/TavernPurchases';
+import TavernRests from './components/tavern/rests/Rests';
+import TavernPurchases from './components/tavern/purchases/Purchases';
 
 function App() {
   const global = globalStyles();
