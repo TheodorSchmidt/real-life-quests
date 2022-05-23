@@ -5,14 +5,17 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { questsStyle } from "../../../styles/Guild";
 import Group from "../../../models/Group";
-
+import Character from "../../../models/Character";
 function QuestsAdd() {
     const quests = questsStyle();
     const [deadline, setDeadline] = useState(new Date());
-    const {groups} = useStore();
+    const {groups, characters} = useStore();
 
     function printGroup(group: Group) {
         return(<option value={group.id}>{group.name}</option>)
+    }
+    function printCharacter(character: Character) {
+        return (<option value={character.id}>{character.nickname}</option>)
     }
 
     return(
@@ -63,6 +66,12 @@ function QuestsAdd() {
                         <option value="VerySmall">5 (Очень хочу делать)</option>
                     </select>
                 </div>      
+            </div>
+            <div className={quests.selectItem}>
+                <select id="questCharacter" name="character">
+                    <option selected value="default">Без персонажа</option>
+                    {characters.map(c => printCharacter(c))}
+                </select>
             </div>
             <div>
                 <span>Срок выполнения</span>

@@ -1,27 +1,33 @@
-import { getDatabase, get, ref, onValue, child, push, update, remove } from 'firebase/database';
-import { runInAction, action, makeObservable, flow, flowResult, observable, computed, makeAutoObservable } from 'mobx';
+import { get, ref, onValue, child, push, update, remove } from 'firebase/database';
+import { runInAction, action, observable, makeAutoObservable } from 'mobx';
 import { database } from '../firebase';
 import Quest from "../models/Quest";
 import Group from '../models/Group';
 import Rest from "../models/Rest";
 import { Coefficient, Status } from '../models/Quest';
-import fetchQuests from "../api/fetchQuests"
+import { Relations } from '../models/Character';
 import { toJS } from 'mobx';
-import { DateCoefficient } from "../models/Quest";
 import Datetime from '../modules/Datetime';
+import Relate from '../modules/Relate';
 import Purchase from '../models/Purchase';
+import Character from '../models/Character';
 
 class Store {
     @observable coins: number = 0;
     @observable quests: Quest[] = [];
     @observable selectedQuest: Quest | undefined = undefined;
     @observable groups: Group[] = [];
+    @observable selectedGroup: Group | undefined = undefined;
     @observable searchQuest: any = {
         status: 1,
         group: "all"
     }
     @observable rests: Rest[] = [];
+    @observable selectedRest: Rest | undefined = undefined;
     @observable purchases: Purchase[] = [];
+    @observable selectedPurchase: Purchase | undefined = undefined;
+    @observable characters: Character[] = [];
+    @observable selectedCharacter: Character | undefined = undefined;
 
     constructor() {
        const coinsRef = ref(database, 'coins/');
@@ -29,17 +35,25 @@ class Store {
        const groupsRef = ref(database, 'groups/');
        const restsRef = ref(database, 'rests/');
        const purchasesRef = ref(database, 'purchases/');
+       const charactersRef = ref(database, 'characters/');
+
        runInAction(() => {
            makeAutoObservable(this, {
                 coins: observable,
                 quests: observable,
                 selectedQuest: observable,
+                selectedGroup: observable,
+                selectedCharacter: observable,
+                selectedRest: observable,
+                selectedPurchase: observable,
                 searchQuest: observable,
                 groups: observable,
                 rests: observable,
                 purchases: observable,
+                characters: observable,
                 updateCoins: action,
-
+                updateDateDiff: action,
+                updateActivity: action,
                 getQuests: action,
                 getGroups: action,
                 getRests: action,
@@ -48,6 +62,12 @@ class Store {
                 addGroup: action,
                 addRest: action,
                 addPurchase: action,
+                addCharacter: action,
+                editQuest: action,
+                editGroup: action,
+                editRest: action,
+                editPurchase: action,
+                editCharacter: action,
                 deleteQuest: action,
                 deleteGroup: action,
                 deleteRest: action,
@@ -90,10 +110,21 @@ class Store {
                     this.purchases.push(data[key]);
                 })
             })
-
+            onValue(charactersRef, (snapshot) => {
+                this.characters = [];
+                const data: Character[] = snapshot.val();
+                Object.keys(data).map((key) => {
+                    data[key].id = key;
+                    this.characters.push(data[key]);
+                })
+            })
        })
     }
 
+
+    // ================================================================================ //
+    // ================================= COINS BLOCK ================================== //
+    // ================================================================================ //
     getCoins = () => {
         return(toJS(this.coins));
     }
@@ -108,6 +139,7 @@ class Store {
         })
     }
     
+
     // ================================================================================ //
     // ================================= QUESTS BLOCK ================================= //
     // ================================================================================ //
@@ -121,6 +153,7 @@ class Store {
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancy')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivation')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
+        const questCharacter = (<HTMLSelectElement>document.querySelector('#questCharacter')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation && questGroup) {
             let questData: Quest = {
@@ -131,6 +164,7 @@ class Store {
                 motivation: Coefficient[questMotivation],
                 reward: Math.round(100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation]),
                 description: questDescription,
+                character: questCharacter,
                 status: Status["ACTIVE"]
             }
             if (questDeadline !== "" && questDeadline !== undefined) {
@@ -154,32 +188,33 @@ class Store {
         const questImportancy = (<HTMLSelectElement>document.querySelector('#questImportancyE')).value;
         const questMotivation = (<HTMLSelectElement>document.querySelector('#questMotivationE')).value;
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescriptionE')).value;
+        const questCharacter = (<HTMLSelectElement>document.querySelector('#questCharacterE')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadlineE')).value;
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation) {
             get(child(questsRef, `quests/${id}`)).then((snapshot) => {
-                let quest: Quest = snapshot.val();
-                quest.name = questName;
-                quest.group = questGroup;
-                quest.difficulty = Coefficient[questDifficulty];
-                quest.importancy = Coefficient[questImportancy];
-                quest.motivation = Coefficient[questMotivation];
-                quest.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
-                quest.description = questDescription;
+                let questData: Quest = snapshot.val();
+                questData.name = questName;
+                questData.group = questGroup;
+                questData.difficulty = Coefficient[questDifficulty];
+                questData.importancy = Coefficient[questImportancy];
+                questData.motivation = Coefficient[questMotivation];
+                questData.reward = 100 * Coefficient[questDifficulty] * Coefficient[questImportancy] * Coefficient[questMotivation];
+                questData.description = questDescription;
                 if (questDeadline !== "" && questDeadline !== undefined) {
                     const dateDeadline = new Date(questDeadline);
-                    quest.deadline = dateDeadline; 
-                    quest.dateDifference = Datetime.calcDaysDifference(dateDeadline);
-                    const coefficient = Datetime.calcDateCoefficient(quest.dateDifference);
-                    Datetime.newDateModif(quest, coefficient);
-                    // this.updateDateDiff(quest);
+                    questData.deadline = dateDeadline; 
+                    questData.dateDifference = Datetime.calcDaysDifference(dateDeadline);
+                    const coefficient = Datetime.calcDateCoefficient(questData.dateDifference);
+                    Datetime.newDateModif(questData, coefficient);
                 } else {
-                    delete quest.deadline;
-                    delete quest.dateDifference;
-                    delete quest.dateModif;
+                    delete questData.deadline;
+                    delete questData.dateDifference;
+                    delete questData.dateModif;
                 }
+                questData.character = questCharacter;
                 const updates: any = {};
-                updates['/quests/' + snapshot.key] = quest;
-                this.selectQuest(quest);
+                updates['/quests/' + snapshot.key] = questData;
+                this.selectQuest(questData);
                 return update(ref(database), updates)
             })
         }  
@@ -199,6 +234,10 @@ class Store {
                     if (quest.deadline) {
                         this.updateDateDiff(quest);
                     }
+                    if (quest.character) {
+                        this.updateActivity(quest.character, 1);
+                        this.cancelSelectingCharacter();
+                    }
                     this.updateCoins(quest.reward);
                 } else {
                     quest.status = 3;
@@ -206,8 +245,13 @@ class Store {
             } else if (cancel === true) {
                 if (complete === true) {
                     quest.status = 1;
+                    if (quest.character) {
+                        this.updateActivity(quest.character, -1, quest.dateComplete, true);
+                        this.cancelSelectingCharacter();
+                    }
                     delete quest.dateComplete;
                     this.updateCoins(-quest.reward);
+                    
                 } else {
                     quest.status = 1;
                 }
@@ -259,6 +303,7 @@ class Store {
         })  
     }
     setSearchOptions = (attr: string, value: string) => {
+        this.cancelSelectingQuest();
         runInAction(() => {
             this.searchQuest[attr] = value;
         })
@@ -266,7 +311,7 @@ class Store {
     
 
     // ================================================================================ //
-    // ================================= GROUP BLOCK ================================= //
+    // ================================= GROUPS BLOCK ================================= //
     // ================================================================================ //
     getGroups = () => {
         return(toJS(this.groups));
@@ -291,16 +336,18 @@ class Store {
         const groupDescription = (<HTMLTextAreaElement>document.querySelector('#groupDescriptionE')).value;
         if (groupName) {
             get(child(groupsRef, `groups/${id}`)).then((snapshot) => {
-                let group: Group = snapshot.val();
-                group.name = groupName;
-                group.description = groupDescription;
+                let groupData: Group = snapshot.val();
+                groupData.name = groupName;
+                groupData.description = groupDescription;
                 const updates: any = {};
-                updates['/groups/' + snapshot.key] = group;
+                updates['/groups/' + snapshot.key] = groupData;
+                this.selectGroup(groupData);
                 return update(ref(database), updates)
             })
         }
     }
     deleteGroup = (id: string = "group") => {
+        this.cancelSelectingGroup();
         this.searchQuest.group = "default";
         const searching = this.quests.filter(quest => quest.group === id);
         // console.log(toJS(searching));
@@ -313,6 +360,16 @@ class Store {
     }
     findGroupById = (id: string = "default") => {
         return this.groups.find(group => group.id === id)
+    }
+    selectGroup = (group: Group) => {
+        runInAction(() => {
+            this.selectedGroup = group;
+        })
+    }
+    cancelSelectingGroup = () => {
+        runInAction(() => {
+            this.selectedGroup = undefined;
+        })
     }
 
     // ================================================================================ //
@@ -331,6 +388,7 @@ class Store {
                 description: restDescription,
                 cost: Number(restCost)
             }
+            console.log(restData);
             const newRestKey = push(child(ref(database), 'rests')).key;
             const updates: any = {};
             updates['/rests/' + newRestKey] = restData;
@@ -341,8 +399,8 @@ class Store {
         const restsRef = ref(database);
         const restName = (<HTMLInputElement>document.querySelector('#restNameE')).value;
         const restDescription = (<HTMLTextAreaElement>document.querySelector('#restDescriptionE')).value;
-        const restCost = (<HTMLInputElement>document.querySelector('#restCost')).value;
-        if (restName) {
+        const restCost = (<HTMLInputElement>document.querySelector('#restCostE')).value;
+        if (restName && restCost) {
             get(child(restsRef, `rests/${id}`)).then((snapshot) => {
                 let restData: Rest = snapshot.val();
                 restData.name = restName;
@@ -350,12 +408,24 @@ class Store {
                 restData.cost = Number(restCost);
                 const updates: any = {};
                 updates['/rests/' + snapshot.key] = restData;
+                this.selectRest(restData);
                 return update(ref(database), updates)
             })
         }
     }
     deleteRest = (id: string = "default") => {
+        this.cancelSelectingRest();
         return remove(ref(database, '/rests/' + id));
+    }
+    selectRest = (rest: Rest) => {
+        runInAction(() => {
+            this.selectedRest = rest;
+        })
+    }
+    cancelSelectingRest = () => {
+        runInAction(() => {
+            this.selectedRest = undefined;
+        })
     }
     findRestById = (id: string = "default") => {
         return this.rests.find(rest => rest.id === id);
@@ -370,6 +440,7 @@ class Store {
     addPurchase = () => {
         const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseName')).value;
         const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutes')).value;
+        const purchaseCharacter = (<HTMLSelectElement>document.querySelector('#purchaseCharacter')).value;
         const rest = this.findRestById(purchaseName);
         if (rest && purchaseMinutes) {
             let purchaseData: Purchase = {
@@ -379,9 +450,14 @@ class Store {
                 cost: rest.cost,
                 minutes: Number(purchaseMinutes),
                 price: rest.cost * Number(purchaseMinutes),
-                dateBuy: new Date()
+                dateBuy: new Date(),
+                character: purchaseCharacter
             }
             this.updateCoins(-purchaseData.price);
+            if (purchaseCharacter) {
+                this.updateActivity(purchaseData.character, 1);
+                this.cancelSelectingCharacter();
+            }
             const newPurchaseKey = push(child(ref(database), 'purchases')).key;
             const updates: any = {};
             updates['/purchases/' + newPurchaseKey] = purchaseData;
@@ -392,31 +468,204 @@ class Store {
         const purchasesRef = ref(database);
         const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseNameE')).value;
         const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutesE')).value;
+        const purchaseCharacter = (<HTMLSelectElement>document.querySelector('#purchaseCharacterE')).value;
         const rest = this.findRestById(purchaseName);
         if (rest && purchaseMinutes) {
             get(child(purchasesRef, `purchases/${id}`)).then((snapshot) => {
                 let purchaseData: Purchase = snapshot.val();
-                this.updateCoins(+purchaseData.price);
+                const priceOld = purchaseData.price;
                 purchaseData.name = rest.name;
                 purchaseData.restId = rest.id;
                 purchaseData.description = rest.description;
                 purchaseData.cost = rest.cost;
                 purchaseData.minutes = Number(purchaseMinutes);
                 purchaseData.price = rest.cost * Number(purchaseMinutes);
+                this.updateCoins(priceOld - purchaseData.price);
+                if (purchaseCharacter !== purchaseData.character) {
+                    this.updateActivity(purchaseData.character, -1, purchaseData.dateBuy, true);
+                    this.updateActivity(purchaseCharacter, 1, purchaseData.dateBuy);
+                }
                 const updates: any = {};
                 updates['/purchases/' + snapshot.key] = purchaseData;
+                this.selectPurchase(purchaseData);
                 return update(ref(database), updates)
             })
         }
     }
     deletePurchase = (id: string = "default") => {
+        this.cancelSelectingPurchase();
         return remove(ref(database, '/purchases/' + id));
     }
     cancelPurchase = (purchase: Purchase) => {
-        this.updateCoins(+purchase.price);
+        this.cancelSelectingPurchase();
+        this.updateCoins(purchase.price);
+        if (purchase.character) {
+            this.updateActivity(purchase.character, -1);
+            this.cancelSelectingCharacter();
+        }
         return remove(ref(database, '/purchases/' + purchase.id));
     }
+    selectPurchase = (purchase: Purchase) => {
+        runInAction(() => {
+            this.selectedPurchase = purchase;
+        })
+    }
+    cancelSelectingPurchase = () => {
+        runInAction(() => {
+            this.selectedPurchase = undefined;
+        })
+    }
 
+
+    // ================================================================================ //
+    // ============================== CHARACTERS BLOCK ================================ //
+    // ================================================================================ //
+    getCharacters = () => {
+        return(toJS(this.characters));
+    }
+    addCharacter = () => {
+        const characterNickname = (<HTMLInputElement>document.querySelector('#characterNickname')).value;
+        const characterRealname = (<HTMLInputElement>document.querySelector('#characterRealname')).value;
+        const characterDescription = (<HTMLInputElement>document.querySelector('#characterDescription')).value;
+        const characterRelations = (<HTMLSelectElement>document.querySelector('#characterRelations')).value;
+        const characterAddress = (<HTMLInputElement>document.querySelector('#characterAddress')).value;
+        const characterPhone = (<HTMLInputElement>document.querySelector('#characterPhone')).value;
+        const characterEmail = (<HTMLInputElement>document.querySelector('#characterEmail')).value;
+        if (characterNickname && characterRelations) {
+            let startCoins = Relate.setRelationsCoins(Relations[characterRelations])
+            let characterData: Character = {
+                nickname: characterNickname,
+                realname: characterRealname,
+                description: characterDescription,
+                relations: Relations[characterRelations],
+                address: characterAddress,
+                relationsCoins: startCoins,
+                phone: characterPhone,
+                email: characterEmail,
+                activity: []
+            }
+            characterData.activity.push(
+                {
+                    date: Datetime.dateToString(new Date()),
+                    active: 0,
+                    check: false
+                }
+            )
+            const newCharacterKey = push(child(ref(database), 'characters')).key;
+            const updates: any = {};
+            updates['/characters/' + newCharacterKey] = characterData;
+            return update(ref(database), updates);
+        }
+    }
+    editCharacter = (id: string = "default") => {   
+        const charactersRef = ref(database);
+        const characterNickname = (<HTMLInputElement>document.querySelector('#characterNicknameE')).value;
+        const characterRealname = (<HTMLInputElement>document.querySelector('#characterRealnameE')).value;
+        const characterDescription = (<HTMLInputElement>document.querySelector('#characterDescriptionE')).value;
+        const characterRelations = (<HTMLSelectElement>document.querySelector('#characterRelationsE')).value;
+        const characterAddress = (<HTMLInputElement>document.querySelector('#characterAddressE')).value;
+        const characterPhone = (<HTMLInputElement>document.querySelector('#characterPhoneE')).value;
+        const characterEmail = (<HTMLInputElement>document.querySelector('#characterEmailE')).value;
+        if (characterNickname && characterRelations) {
+            get(child(charactersRef, `characters/${id}`)).then((snapshot) => {
+                let characterData: Character = snapshot.val();
+                characterData.nickname = characterNickname;
+                characterData.realname = characterRealname;
+                characterData.description = characterDescription;
+                if (characterData.relations !== Relations[characterRelations]) {
+                    characterData.relations = Relations[characterRelations];
+                    characterData.relationsCoins = Relate.setRelationsCoins(Relations[characterRelations]);
+                }
+                characterData.address = characterAddress;
+                characterData.phone = characterPhone;
+                characterData.email = characterEmail;
+                const updates: any = {};
+                updates['/characters/' + snapshot.key] = characterData;
+                this.selectCharacter(characterData);
+                return update(ref(database), updates)
+            })
+        }
+    }
+    deleteCharacter = (id: string = "default") => {
+        this.cancelSelectingCharacter();
+        const searching = this.quests.filter(quest => quest.character === id);
+        searching.forEach(quest => {
+            if (quest.id)
+            this.makeAttrDefault(quest.id, "character");
+        })
+        return remove(ref(database, '/characters/' + id));
+    }
+    selectCharacter = (character: Character) => {
+        runInAction(() => {
+            this.selectedCharacter = character;
+        })
+    }
+    cancelSelectingCharacter = () => {
+        runInAction(() => {
+            this.selectedCharacter = undefined;
+        })
+    }
+    findCharacterById = (id: string = "default") => {
+        return this.characters.find(character => character.id === id)
+    }
+    updateActivity = (id: string = "default", act: number, day: Date = new Date(), isCancel: boolean = false) => {
+        const charactersRef = ref(database);
+        get(child(charactersRef, `characters/${id}`)).then((snapshot) => {
+            let characterData: Character = snapshot.val();
+            console.log(characterData);
+            let thisDayInd = characterData.activity.findIndex((a) => a.date == Datetime.dateToString(new Date(day)))
+            if (thisDayInd == -1) {
+                characterData.activity.push(
+                {
+                    date: Datetime.dateToString(new Date()),
+                    active: Number(act),
+                    check: false
+                })
+                console.log("SOME SHIT")
+            } else {
+                characterData.activity[thisDayInd].active += act;
+                characterData.activity[thisDayInd].check = false;
+                console.log("Я ЗДЕСЬ")
+            }
+            if (act > 0) {
+                characterData.relationsCoins = Relate.changeRelationsCoins(characterData.relationsCoins, characterData.relations, true, isCancel);
+                characterData.relations = Relate.changeRelationsStatus(characterData.relationsCoins);
+            } else {
+                characterData.relationsCoins = Relate.changeRelationsCoins(characterData.relationsCoins, characterData.relations, false, isCancel);
+                characterData.relations = Relate.changeRelationsStatus(characterData.relationsCoins);
+            }
+            const updates: any = {};
+            updates['/characters/' + snapshot.key] = characterData;
+            return update(ref(database), updates)
+        })
+    }
+    checkActivity = (id: string = "default") => {
+        const charactersRef = ref(database);
+        get(child(charactersRef, `characters/${id}`)).then((snapshot) => {
+            let characterData: Character = snapshot.val();
+            let today =  Datetime.dateToString(new Date());
+            let todayInd = characterData.activity.findIndex((a) => a.date == today)
+            if (todayInd === -1) {
+                characterData.activity.push(
+                {
+                    date: Datetime.dateToString(new Date()),
+                    active: 0,
+                    check: false
+                })
+            }
+            let notChecked = characterData.activity.filter((a) => a.check === false && a.date !== today)
+            let notActive = notChecked.filter((a) => a.active === 0);
+            notActive.forEach(a => {
+                let dayInd = characterData.activity.findIndex((i) => i.date === a.date);
+                characterData.activity[dayInd].check = true;
+                characterData.relationsCoins = Relate.changeRelationsCoins(characterData.relationsCoins, characterData.relations, false);
+                characterData.relations = Relate.changeRelationsStatus(characterData.relationsCoins);
+            })
+            const updates: any = {};
+            updates['/characters/' + snapshot.key] = characterData;
+            return update(ref(database), updates)
+        })
+    }
 }
 
 export default Store;

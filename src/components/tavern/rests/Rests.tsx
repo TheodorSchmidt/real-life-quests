@@ -5,6 +5,7 @@ import {observer} from "mobx-react-lite";
 import { tavernStyle } from "../../../styles/Tavern";
 import RestsAdd from "./RestsAdd";
 import RestsList from "./RestsList";
+import RestsSelected from "./RestsSelected";
 
 function Rests() {
     const tavern = tavernStyle();
@@ -14,6 +15,7 @@ function Rests() {
     return(
         <div>
             <button id="addRest" onClick={() => setModalActiveAddRest(true)}>Создать отдых</button>
+            <RestsSelected/>
             <RestsList/>
             <Modal active={modalActiveAddRest} setActive={setModalActiveAddRest}>
                 <div className={tavern.content}>

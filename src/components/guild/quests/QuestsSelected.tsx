@@ -10,7 +10,7 @@ import Datetime from "../../../modules/Datetime";
 
 function QuestsSelected() {
     const quests = questsStyle();
-    const {selectedQuest, deleteQuest, editQuest, findGroupById, updateDateDiff} = useStore();
+    const {selectedQuest, deleteQuest, editQuest, findGroupById, findCharacterById, updateDateDiff} = useStore();
     const [modalActiveEdit, setModalActiveEdit] = useState(false);
 
 
@@ -65,30 +65,44 @@ function QuestsSelected() {
         }
     }
 
+    function printCharacter(characterId: string | undefined) {
+        if (characterId) {
+            const character = findCharacterById(characterId);
+            if (character) {
+                return(<div>Персонаж: {character.nickname}</div>)
+            } else {
+                return(<div>Персонаж: без персонажа</div>)
+            }
+        } else {
+            return(<></>)
+        }
+    }
+
     if (selectedQuest) {
         if (selectedQuest.status === 1) {
             // updateDateDiff(selectedQuest);
             return(
                 <div className={quests.info}>
-                        <div className={quests.name}>{selectedQuest?.name}</div>
-                        {printGroup(selectedQuest.group)}
-                        <div>Статус: в процессе</div>
-                        <div className={quests.description}>{selectedQuest?.description}</div>
-                        <div>Крайний срок: {printDate(selectedQuest.deadline)}</div>
-                        {printDaysDifference(selectedQuest.dateDifference)}
-                        {printDateModif(selectedQuest.dateModif)}
-                        <div>Награда: {selectedQuest.reward}</div>
-                        <button onClick={() => setModalActiveEdit(true)}>Редактировать квест</button>
-                        <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить квест</button>
-                        <Modal active={modalActiveEdit} setActive={setModalActiveEdit}>
-                            <div className={quests.content}>
-                                <QuestsEdit/>
-                                <div className={quests.button}>
-                                    <button id="editQuest" onClick={() => {editQuest(selectedQuest?.id); setModalActiveEdit(false)}}>Изменить</button>
-                                </div>
+                    <div className={quests.name}>{selectedQuest?.name}</div>
+                    {printGroup(selectedQuest.group)}
+                    <div>Статус: в процессе</div>
+                    <div className={quests.description}>{selectedQuest?.description}</div>
+                    {printCharacter(selectedQuest.character)}
+                    <div>Крайний срок: {printDate(selectedQuest.deadline)}</div>
+                    {printDaysDifference(selectedQuest.dateDifference)}
+                    {printDateModif(selectedQuest.dateModif)}
+                    <div>Награда: {selectedQuest.reward}</div>
+                    <button onClick={() => setModalActiveEdit(true)}>Редактировать квест</button>
+                    <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить квест</button>
+                    <Modal active={modalActiveEdit} setActive={setModalActiveEdit}>
+                        <div className={quests.content}>
+                            <QuestsEdit/>
+                            <div className={quests.button}>
+                                <button id="editQuest" onClick={() => {editQuest(selectedQuest?.id); setModalActiveEdit(false)}}>Изменить</button>
                             </div>
-                        </Modal>
-                    </div>
+                        </div>
+                    </Modal>
+                </div>
             )
         } else if (selectedQuest.status === 2) {
             return(
@@ -97,6 +111,7 @@ function QuestsSelected() {
                     {printGroup(selectedQuest.group)}
                     <div>Статус: выполнено</div>
                     <div className={quests.description}>{selectedQuest?.description}</div>
+                    {printCharacter(selectedQuest.character)}
                     <div>Дата выполнения: {printDate(selectedQuest.dateComplete)}</div>
                     <div>Полученные очки: {selectedQuest.reward}</div>
                     <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить запись</button>
@@ -109,6 +124,7 @@ function QuestsSelected() {
                     {printGroup(selectedQuest.group)}
                     <div>Статус: провалено</div>
                     <div className={quests.description}>{selectedQuest?.description}</div>
+                    {printCharacter(selectedQuest.character)}
                     <button onClick={() => deleteQuest(selectedQuest.id)}>Удалить запись</button>
                 </div>
             )

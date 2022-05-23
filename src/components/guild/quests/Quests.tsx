@@ -21,9 +21,8 @@ import {
 function Quests() {
     const quests = questsStyle();
     const buttons = buttonStyle();
-    const {addQuest, addGroup, groups, setSearchOptions} = useStore();
+    const {addQuest, getGroups, setSearchOptions} = useStore();
     const [modalActiveAddQuest, setModalActiveAddQuest] = useState(false);
-    const [modalActiveAddGroup, setModalActiveAddGroup] = useState(false);
 
     function printGroup(group : Group) {
         return(<option value={group.id}>{group.name}</option>)
@@ -56,15 +55,13 @@ function Quests() {
                         <select id="questGroupFilter" name="group">
                             <option selected value="all">Все</option>
                             <option value="default">Без группы</option>
-                            {groups.map(g => printGroup(g))}
+                            {getGroups().map(g => printGroup(g))}
                         </select>
                     </li>
                 </ul>
             </div>
             <QuestsSelected/>
-            <div className={quests.list}>
-                <QuestsList/>
-            </div>
+            <QuestsList/>
             <Modal active={modalActiveAddQuest} setActive={setModalActiveAddQuest}>
                 <div className={quests.content}>
                     <QuestsAdd />

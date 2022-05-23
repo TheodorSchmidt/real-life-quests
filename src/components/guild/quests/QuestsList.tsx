@@ -21,7 +21,7 @@ function QuestsList() {
     }
     return(
         <Virtuoso
-            style={{ height: "800px", width: "100%" }}
+            style={{ height: "800px", width: "50%" }}
             data={showedQuests}
             itemContent={(index) => {
                 return(

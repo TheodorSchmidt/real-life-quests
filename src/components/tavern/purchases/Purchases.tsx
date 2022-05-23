@@ -5,6 +5,7 @@ import PurchasesList from "./PurchasesList";
 import PurchasesAdd from "./PurchasesAdd";
 import {observer} from "mobx-react-lite";
 import { tavernStyle } from "../../../styles/Tavern";
+import PurchasesSelected from "./PurchasesSelected";
 
 function Purchases() {
     const tavern = tavernStyle();
@@ -14,6 +15,7 @@ function Purchases() {
     return(
         <div>
             <button id="addPurchase" onClick={() => setModalActiveAddPurchase(true)}>Купить отдых</button>
+            <PurchasesSelected/>
             <PurchasesList/>
             <Modal active={modalActiveAddPurchase} setActive={setModalActiveAddPurchase}>
                 <div className={tavern.content}>

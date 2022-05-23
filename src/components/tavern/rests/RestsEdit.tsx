@@ -24,7 +24,7 @@ function RestsEdit({item}: Props) {
             </div>
             <div>
                 Цена за минуту:
-                <input id="restCost" type="number" min="0.5" defaultValue={0.5} step={0.5}></input>
+                <input id="restCostE" type="number" min="0.5" defaultValue={0.5} step={0.5}></input>
             </div>
         </div>
     )

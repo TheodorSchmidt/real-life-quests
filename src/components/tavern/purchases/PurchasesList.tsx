@@ -9,7 +9,7 @@ function PurchasesList() {
     const {purchases} = useStore();
     return(
         <Virtuoso
-            style={{ height: "800px", width: "100%" }}
+            style={{ height: "800px", width: "50%" }}
             data={purchases}
             itemContent={(index) => {
                 return(

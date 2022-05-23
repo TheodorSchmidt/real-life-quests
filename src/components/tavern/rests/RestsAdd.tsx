@@ -14,7 +14,7 @@ function RestsAdd() {
             </div>
             <div>
                 Цена за минуту:
-                <input id="restCost" type="number" min="0.5" defaultValue={0.5} step={0.5}></input>
+                <input id="restCost" type="number" defaultValue={0.5} min="0.5" step={0.5}></input>
             </div>
         </div>
     )

@@ -23,7 +23,7 @@ export default interface Quest {
     dateComplete?: Date;
     reward: number; 
     experience?: number; //? yet
-    characters?: Character[];
+    character?: string;
     locations?: Location;
     perks?: Perk[];
     //line?: string;

@@ -8,6 +8,7 @@ import Group from "../../../models/Group";
 import { buttonStyle } from "../../../styles/Button";
 import GroupsAdd from "./GroupsAdd";
 import GroupsList from "./GroupsList";
+import GroupsSelected from "./GroupsSelected";
 
 function Groups() {
     const quests = questsStyle();
@@ -17,6 +18,7 @@ function Groups() {
     return(
         <div>
             <button id="createGroup" onClick={() => setModalActiveAddGroup(true)}>Создать группу</button>
+            <GroupsSelected/>
             <GroupsList/>
             <Modal active={modalActiveAddGroup} setActive={setModalActiveAddGroup}>
                 <div className={quests.content}>

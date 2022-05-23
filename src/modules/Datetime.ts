@@ -9,6 +9,12 @@ const Datetime = {
         const dateString = mm + '/' + dd + '/' + yyyy;
         return dateString;
     },
+    yesterday: () => {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1)
+        return Datetime.dateToString(yesterday);
+    },
     calcDaysDifference: (date: Date) => {
         let today = new Date();
         let deadline = new Date(date);

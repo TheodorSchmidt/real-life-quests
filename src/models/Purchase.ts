@@ -3,6 +3,7 @@ export default interface Purchase {
     restId?: string,
     name: string,
     description?: string,
+    character?: string,
     cost: number,
     minutes: number,
     price: number,

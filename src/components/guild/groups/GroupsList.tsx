@@ -9,7 +9,7 @@ function GroupsList() {
     const {groups} = useStore();
     return(
         <Virtuoso
-            style={{ height: "800px", width: "100%" }}
+            style={{ height: "800px", width: "50%" }}
             data={groups}
             itemContent={(index) => {
                 return(
