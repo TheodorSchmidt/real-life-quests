@@ -1,38 +1,37 @@
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import useStore from "../../../hooks/useStore";
-import { tavernStyle } from "../../../styles/Tavern";
-import { tavernElementStyle } from "../../../styles/Tavern";
+import { sectionStyle, sectionElementStyle, sectionButtonStyle } from "../../../styles/Section";
 import Datetime from "../../../modules/Datetime";
 import PurchasesEdit from "./PurchasesEdit";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 import Modal from "../../Modal";
 
 function PurchasesSelected() {
-    const tavern = tavernStyle();
-    const tavernElement = tavernElementStyle();
+    const section = sectionStyle();
+    const sectionElement = sectionElementStyle();
+    const sectionButton = sectionButtonStyle();
     const {selectedPurchase, editPurchase, deletePurchase} = useStore();
     const [modalActiveEditPurchase, setModalActiveEditPurchase] = useState(false);
 
     if (selectedPurchase) {
         return(
-            <div className={tavern.info}>
-                <div className={tavern.name}>{selectedPurchase?.name}</div>
-                <div className={tavern.description}>{selectedPurchase?.description}</div>
+            <div className={section.info}>
+                <div className={section.name}>{selectedPurchase?.name}</div>
+                <div className={section.description}>{selectedPurchase?.description}</div>
                 <div>Дата: {Datetime.dateToString(selectedPurchase?.dateBuy)}</div>
                 <div>Время: {selectedPurchase.minutes}</div>
                 <div>Цена: {selectedPurchase.price}</div>
                 <div>
-                    <EditIcon className={tavernElement.buttonCancel} onClick={() => setModalActiveEditPurchase(true)}/>
-                    <DeleteIcon className={tavernElement.buttonFailed} onClick={() => deletePurchase(selectedPurchase.id)}/>
+                    <DeleteIcon className={sectionButton.buttonFailed} onClick={() => deletePurchase(selectedPurchase.id)}/>
+                    <EditIcon className={sectionButton.buttonCancel} onClick={() => setModalActiveEditPurchase(true)}/>
                 </div>
                 <Modal active={modalActiveEditPurchase} setActive={setModalActiveEditPurchase}>
-                    <div className={tavern.content}>
+                    <div className={section.content}>
                         <PurchasesEdit item={selectedPurchase}/>
-                        <div className={tavern.button}>
-                            <button id="editPurchase" onClick={() => {editPurchase(selectedPurchase.id); setModalActiveEditPurchase(false)}}>Изменить</button>
-                        </div>
+                        <CheckIcon id="editPurchase" className={sectionButton.buttonComplete} onClick={() => {editPurchase(selectedPurchase?.id); setModalActiveEditPurchase(false)}}/>
                     </div>
                 </Modal>
             </div>

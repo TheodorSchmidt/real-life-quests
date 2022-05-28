@@ -1,8 +1,4 @@
 import React, {useState} from "react";
-import useStore from "../../hooks/useStore";
-import Rests from "./rests/Rests";
-import Purchases from "./purchases/Purchases";
-import Modal from "../Modal";
 import {observer} from "mobx-react-lite";
 import { tavernStyle } from "../../styles/Tavern";
 import {

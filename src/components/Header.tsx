@@ -18,7 +18,7 @@ function Header() {
                     <Link to="/guild">Гильдия</Link>
                 </li>
                 <li>
-                    <Link to="/perks">Навыки</Link>
+                    <Link to="/perks">Навыки</Link> 
                 </li>
                 <li>
                     <Link to="/characters">Персонажи</Link>

@@ -3,29 +3,29 @@ import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import Modal from "../../Modal";
 import "react-datepicker/dist/react-datepicker.css";
-import { questsStyle } from "../../../styles/Guild";
-import Group from "../../../models/Group";
-import { buttonStyle } from "../../../styles/Button";
+import { sectionButtonStyle, sectionStyle } from "../../../styles/Section";
 import GroupsAdd from "./GroupsAdd";
 import GroupsList from "./GroupsList";
 import GroupsSelected from "./GroupsSelected";
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 
 function Groups() {
-    const quests = questsStyle();
+    const section = sectionStyle();
+    const sectionButton = sectionButtonStyle();
     const {addGroup} = useStore();
     const [modalActiveAddGroup, setModalActiveAddGroup] = useState(false);
 
     return(
         <div>
-            <button id="createGroup" onClick={() => setModalActiveAddGroup(true)}>Создать группу</button>
+            <AddIcon id="createGroup" className={sectionButton.buttonAdd} onClick={() => setModalActiveAddGroup(true)} />
+            <br />
             <GroupsSelected/>
             <GroupsList/>
             <Modal active={modalActiveAddGroup} setActive={setModalActiveAddGroup}>
-                <div className={quests.content}>
+                <div className={section.content}>
                     <GroupsAdd/>
-                    <div className={quests.button}>
-                        <button id="addGroup" onClick={() => {addGroup(); setModalActiveAddGroup(false)}}>Создать группу</button>
-                    </div>
+                    <CheckIcon id="addGroup" className={sectionButton.buttonComplete} onClick={() => {addGroup(); setModalActiveAddGroup(false)}}/>
                 </div>
             </Modal>
         </div>

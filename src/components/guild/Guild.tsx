@@ -1,9 +1,6 @@
 import React, {useState} from "react";
-import useStore from "../../hooks/useStore";
-import Modal from "../Modal";
 import {observer} from "mobx-react-lite";
-import { tavernStyle } from "../../styles/Tavern";
-import { questsStyle } from "../../styles/Guild";
+import { sectionStyle } from "../../styles/Section";
 import {
     BrowserRouter as Router,
     Routes as Switch,
@@ -13,11 +10,11 @@ import {
 } from "react-router-dom"; 
 
 function Guild() {
-    const guild = questsStyle();
+    const section = sectionStyle();
     return(
         <div>
-            <div className={guild.menu}>
-                <ul className={guild.navigation}>
+            <div className={section.menu}>
+                <ul className={section.navigation}>
                     <li>
                         <Link to="quests">Квесты</Link>
                     </li>

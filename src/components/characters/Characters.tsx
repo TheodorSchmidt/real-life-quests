@@ -2,20 +2,26 @@ import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import useStore from "../../hooks/useStore";
 import { charactersStyle } from "../../styles/Characters";
+import { sectionButtonStyle, sectionStyle } from "../../styles/Section";
 import Modal from "../Modal";
 import CharactersAdd from "./CharactersAdd";
 import CharactersList from "./CharactersList";
 import CharactersSelected from "./CharactersSelected";
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
+
 function Characters() {
-    const characters = charactersStyle();
+    const section = sectionStyle();
+    const sectionButton = sectionButtonStyle();
     const {addCharacter} = useStore();
     const [modalActiveAddCharacter, setModalActiveAddCharacter] = useState(false);
     return(
         <div>
-            <button id="createCharacter" onClick={() => setModalActiveAddCharacter(true)}>Создать персонажа</button>
-            <div className={characters.menu}>
-                <ul className={characters.navigation}>
-                    <li>Фильтрация</li>
+            <div className={section.menu}>
+                <ul className={section.navigation}>
+                    <li>
+                        <AddIcon id="createCharacter" className={sectionButton.buttonAdd} onClick={() => setModalActiveAddCharacter(true)}/>
+                    </li>
                     <li>   
                         <select id="characterRelationsFilter" name="relations">
                             <option value="0">Никто</option>
@@ -31,11 +37,9 @@ function Characters() {
             <CharactersSelected/>
             <CharactersList/>
             <Modal active={modalActiveAddCharacter} setActive={setModalActiveAddCharacter}>
-                <div className={characters.content}>
+                <div className={section.content}>
                     <CharactersAdd/>
-                    <div className={characters.button}>
-                        <button id="addCharacter" onClick={() => {addCharacter(); setModalActiveAddCharacter(false)}}>Добавить</button>
-                    </div>
+                    <CheckIcon id="addCharacter" className={sectionButton.buttonComplete} onClick={() => {addCharacter(); setModalActiveAddCharacter(false)}}/>                
                 </div>
             </Modal>
         </div>

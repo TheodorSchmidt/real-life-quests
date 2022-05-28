@@ -1,7 +1,7 @@
 import {observer} from "mobx-react-lite";
 import useStore from "../../../hooks/useStore";
 import Rest from "../../../models/Rest";
-import { tavernStyle } from "../../../styles/Tavern";
+import { sectionStyle } from "../../../styles/Section";
 import Character from "../../../models/Character";
 
 function printRest(rest: Rest) {
@@ -12,13 +12,13 @@ function printCharacter(character: Character) {
 }
 
 function PurchasesAdd() {
-    const tavern = tavernStyle();
+    const section = sectionStyle();
     const {rests, characters} = useStore();
 
     return(
         <div>
-            <p>Купить отдых</p>
-            <div className={tavern.selectItem}>
+            <p className={section.headline}>Добавить покупку</p>
+            <div className={section.selectItem}>
                 <select id="purchaseName" name="purchase">
                     {rests.map(r => printRest(r))}
                 </select>
@@ -27,7 +27,7 @@ function PurchasesAdd() {
                 Количество минут:
                 <input id="purchaseMinutes" type="number" min="5" defaultValue={5} step={1}></input>
             </div>
-            <div className={tavern.selectItem}>
+            <div className={section.selectItem}>
                 <select id="purchaseCharacter" name="character">
                     <option selected value="default">Без персонажа</option>
                     {characters.map(c => printCharacter(c))}

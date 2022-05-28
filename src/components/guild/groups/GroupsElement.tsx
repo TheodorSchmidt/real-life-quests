@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import {questsElementStyle} from "../../../styles/Guild";
+import { sectionElementStyle } from "../../../styles/Section";
 import Group from "../../../models/Group";
 
 type Props = {
@@ -9,11 +9,11 @@ type Props = {
 }
 
 function GroupsElement({item}: Props) {
-    const groupsElement = questsElementStyle();
+    const sectionElement = sectionElementStyle();
     const {selectGroup, selectedGroup} = useStore();
 
     return(
-        <div className={item.id === selectedGroup?.id ? groupsElement.questBlockSelect : groupsElement.questBlock} onClick={() => selectGroup(item)}>
+        <div className={item.id === selectedGroup?.id ? sectionElement.blockSelect : sectionElement.block} onClick={() => selectGroup(item)}>
             <div>{item.name}</div>
         </div>
     )

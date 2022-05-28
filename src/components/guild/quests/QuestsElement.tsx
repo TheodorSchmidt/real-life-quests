@@ -5,41 +5,42 @@ import  Quest  from "../../../models/Quest";
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
-import { questsElementStyle } from "../../../styles/Guild";
+import {sectionButtonStyle, sectionElementStyle} from "../../../styles/Section";
 
 type Props = {
     item: Quest
 }
 
 function QuestsElement({item}: Props) {
-    const questsElement = questsElementStyle();
+    const sectionElement = sectionElementStyle();
+    const sectionButton = sectionButtonStyle();
     const {completeQuest, selectQuest, selectedQuest, updateDateDiff} = useStore();
     updateDateDiff(item);
     if (item.status === 1) {
         return(
-            <div className={item.id === selectedQuest?.id ? questsElement.questBlockSelect : questsElement.questBlock} onClick={() => selectQuest(item)}>
+            <div className={item.id === selectedQuest?.id ? sectionElement.blockSelect : sectionElement.block} onClick={() => selectQuest(item)}>
                 {item.name}
                 <div>
-                    <ClearIcon className={questsElement.buttonFailed} onClick={() => completeQuest(item.id, false, false)}/>
-                    <CheckIcon className={questsElement.buttonComplete} onClick={() => completeQuest(item.id, true, false)}/>
+                    <ClearIcon className={sectionButton.buttonFailed} onClick={() => completeQuest(item.id, false, false)}/>
+                    <CheckIcon className={sectionButton.buttonComplete} onClick={() => completeQuest(item.id, true, false)}/>
                 </div>
             </div>
         )
     } else if (item.status === 2) {
         return(
-            <div className={item.id === selectedQuest?.id ? questsElement.questBlockCompletedSelect : questsElement.questBlockCompleted} onClick={() => selectQuest(item)}>
+            <div className={item.id === selectedQuest?.id ? sectionElement.blockCompletedSelect : sectionElement.blockCompleted} onClick={() => selectQuest(item)}>
                 {item.name}
                 <div>
-                    <KeyboardReturnIcon className={questsElement.buttonCancel} onClick={() => completeQuest(item.id, true, true)}/>
+                    <KeyboardReturnIcon className={sectionButton.buttonCancel} onClick={() => completeQuest(item.id, true, true)}/>
                 </div>
             </div>
         )
     } else if (item.status === 3) {
         return(
-            <div className={item.id === selectedQuest?.id ? questsElement.questBlockFailedSelect : questsElement.questBlockFailed} onClick={() => selectQuest(item)}>
+            <div className={item.id === selectedQuest?.id ? sectionElement.blockFailedSelect : sectionElement.blockFailed} onClick={() => selectQuest(item)}>
                 {item.name}
                 <div>
-                    <KeyboardReturnIcon className={questsElement.buttonCancel} onClick={() => completeQuest(item.id, false, true)}/>
+                    <KeyboardReturnIcon className={sectionButton.buttonCancel} onClick={() => completeQuest(item.id, false, true)}/>
                 </div>
             </div>
         )

@@ -18,9 +18,14 @@ class Store {
     @observable selectedQuest: Quest | undefined = undefined;
     @observable groups: Group[] = [];
     @observable selectedGroup: Group | undefined = undefined;
-    @observable searchQuest: any = {
+    @observable filterQuest: any = {
         status: 1,
-        group: "all"
+        group: "all",
+        character: "all"
+    }
+    @observable sortQuest: any = {
+        attr: "default",
+        isDown: true
     }
     @observable rests: Rest[] = [];
     @observable selectedRest: Rest | undefined = undefined;
@@ -46,7 +51,7 @@ class Store {
                 selectedCharacter: observable,
                 selectedRest: observable,
                 selectedPurchase: observable,
-                searchQuest: observable,
+                filterQuest: observable,
                 groups: observable,
                 rests: observable,
                 purchases: observable,
@@ -302,10 +307,44 @@ class Store {
             return update(ref(database), updates)
         })  
     }
-    setSearchOptions = (attr: string, value: string) => {
+    setFilterOptions = (attr: string, value: string) => {
         this.cancelSelectingQuest();
         runInAction(() => {
-            this.searchQuest[attr] = value;
+            this.filterQuest[attr] = value;
+        })
+    }
+    setSortOptions = (value: string) => {
+        this.cancelSelectingQuest();
+        let attr = "default";
+        let isDown = true;
+        if (value === "rewardUp") {
+            attr = "reward";
+            isDown = false;
+        } else if (value === "rewardDown") {
+            attr = "reward";
+            isDown = true;
+        } else if (value === "importancyUp") {
+            attr = "importancy";
+            isDown = false;
+        } else if (value === "importancyDown") {
+            attr = "importancy";
+            isDown = true;
+        } else if (value === "difficultyUp") {
+            attr = "difficulty";
+            isDown = false;
+        } else if (value === "difficultyDown") {
+            attr = "difficulty";
+            isDown = true
+        } else if (value === "motivationUp") {
+            attr = "motivation";
+            isDown = false;
+        } else if (value === "motivationDown") {
+            attr = "motivation";
+            isDown = true;
+        }
+        runInAction(() => {
+            this.sortQuest.attr = attr;
+            this.sortQuest.isDown = isDown;
         })
     }
     
@@ -348,7 +387,7 @@ class Store {
     }
     deleteGroup = (id: string = "group") => {
         this.cancelSelectingGroup();
-        this.searchQuest.group = "default";
+        this.filterQuest.group = "default";
         const searching = this.quests.filter(quest => quest.group === id);
         // console.log(toJS(searching));
         searching.forEach(quest => {

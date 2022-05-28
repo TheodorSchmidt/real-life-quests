@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite";
 import Character from "../../models/Character";
-import { charactersStyle } from "../../styles/Characters";
+import { sectionStyle } from "../../styles/Section";
 
 type Props = {
     item: Character | undefined;
 }
 
 function CharactersEdit({item}: Props) {
-    const characters = charactersStyle();
+    const section = sectionStyle();
     return(
         <div>
-            <p>Изменить персонажа</p>
+            <p className={section.headline}>Изменить персонажа</p>
             <div key={item?.nickname}>
                 <input 
                     id="characterNicknameE"
@@ -30,7 +30,7 @@ function CharactersEdit({item}: Props) {
             <div key={item?.description}>
                 <textarea id="characterDescriptionE" defaultValue={item?.description} placeholder="Введите описание персонажа"></textarea>
             </div>
-            <div className={characters.selectItem}>
+            <div className={section.selectItem}>
                 <select id="characterRelationsE" name="relations">
                     <option selected value="Nobody">Никто</option>
                     <option value="Familiar">Знакомый</option>

@@ -4,10 +4,11 @@ import {observer} from "mobx-react-lite";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { questsStyle } from "../../../styles/Guild";
+import { sectionStyle } from "../../../styles/Section";
 import Group from "../../../models/Group";
 import Character from "../../../models/Character";
 function QuestsEdit() {
-    const quests = questsStyle();
+    const section = sectionStyle();
     const {selectedQuest, groups, characters} = useStore();
     const [deadline, setDeadline] = useState(new Date());
 
@@ -22,7 +23,7 @@ function QuestsEdit() {
     if (selectedQuest) {
         return(
             <div>
-                <p>Редактирование квеста</p>
+                <p className={section.headline}>Редактировать квест</p>
                 <div key={selectedQuest.name}>
                     <input 
                         id="questNameE"
@@ -31,7 +32,7 @@ function QuestsEdit() {
                         placeholder="Введите название *"
                     />
                 </div>
-                <div className={quests.selectItem}>
+                <div className={section.selectItem}>
                     <select id="questGroupE" name="group">
                         <option selected value="default">Без группы</option>
                         {groups.map(g => printGroup(g))}
@@ -42,8 +43,8 @@ function QuestsEdit() {
                         <textarea id="questDescriptionE" defaultValue={selectedQuest.description} placeholder="Введите описание"></textarea>
                     </div>
                 </div>
-                <div className={quests.select}>
-                    <div className={quests.selectItem}>
+                <div className={section.select}>
+                    <div className={section.selectItem}>
                         <select id="questDifficultyE" name="difficulty" defaultValue={selectedQuest.difficulty}>
                             <option selected disabled value="0">Выберите сложность *</option>
                             <option value="VerySmall">1 (Очень просто)</option>
@@ -53,7 +54,7 @@ function QuestsEdit() {
                             <option value="VeryBig">5 (Сложно)</option>
                         </select>
                     </div>
-                    <div className={quests.selectItem}>
+                    <div className={section.selectItem}>
                         <select id="questImportancyE" name="importancy" defaultValue={selectedQuest.importancy}>
                             <option selected disabled value="0">Выберите важность *</option>
                             <option value="VerySmall">1 (Совсем не важно)</option>
@@ -63,7 +64,7 @@ function QuestsEdit() {
                             <option value="VeryBig">5 (Очень важно)</option>
                         </select>
                     </div>
-                    <div className={quests.selectItem}>
+                    <div className={section.selectItem}>
                         <select id="questMotivationE" name="motivation" defaultValue={selectedQuest.motivation}>
                             <option selected disabled value="0">Выберите важность *</option>
                             <option value="VeryBig">1 (Совсем не хочу делать)</option>
@@ -74,7 +75,7 @@ function QuestsEdit() {
                         </select>
                     </div>      
                 </div>
-                <div className={quests.selectItem}>
+                <div className={section.selectItem}>
                     <select id="questCharacterE" name="character">
                         <option selected value="default">Без персонажа</option>
                         {characters.map(c => printCharacter(c))}

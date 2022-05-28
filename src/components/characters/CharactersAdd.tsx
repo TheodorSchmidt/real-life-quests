@@ -2,29 +2,31 @@ import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import useStore from "../../hooks/useStore";
 import { charactersStyle } from "../../styles/Characters";
+import { sectionStyle } from "../../styles/Section";
 
 function CharactersAdd() {
+    const section = sectionStyle();
     const characters = charactersStyle();
 
     return(
         <div>
-            <p>Создать персонажа</p>
+            <p className={section.headline}>Создать персонажа</p>
             <div>
                 <input 
                     id="characterNickname"
                     type="text"
-                    placeholder="Введите никнейм *"
+                    placeholder="Никнейм *"
                 />
             </div>
             <div>
                 <input
                     id="characterRealname"
                     type="text"
-                    placeholder="Введите настоящее имя"
+                    placeholder="Настоящее имя"
                 />
             </div>
             <div>
-                <textarea id="characterDescription" placeholder="Введите описание персонажа"></textarea>
+                <textarea id="characterDescription" placeholder="Описание"></textarea>
             </div>
             <div className={characters.selectItem}>
                 <select id="characterRelations" name="relations">
@@ -40,21 +42,21 @@ function CharactersAdd() {
                 <input
                     id="characterAddress"
                     type="text"
-                    placeholder="Введите адрес персонажа"
+                    placeholder="Адрес персонажа"
                 />
             </div>
             <div>
                 <input
                     id="characterPhone"
                     type="text"
-                    placeholder="Введите телефон персонажа"
+                    placeholder="Телефон персонажа"
                 />
             </div>
             <div>
                 <input
                     id="characterEmail"
                     type="text"
-                    placeholder="Введите email персонажа"
+                    placeholder="Email персонажа"
                 />
             </div>
         </div>

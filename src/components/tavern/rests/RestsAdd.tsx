@@ -1,9 +1,11 @@
 import {observer} from "mobx-react-lite";
+import { sectionStyle } from "../../../styles/Section";
 
 function RestsAdd() {
+    const section = sectionStyle();
     return(
         <div>
-            <p>Создать отдых</p>
+            <p className={section.headline}>Создать отдых</p>
             <input 
                 id="restName"
                 type="text"

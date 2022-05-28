@@ -1,9 +1,11 @@
 import {observer} from "mobx-react-lite";
+import { sectionStyle } from "../../../styles/Section";
 
 function GroupsAdd() {
+    const section = sectionStyle();
     return(
         <div>
-            <p>Создать группу</p>
+            <p className={section.headline}>Создать группу</p>
             <input 
                 id="groupName"
                 type="text"

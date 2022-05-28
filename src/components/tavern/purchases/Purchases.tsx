@@ -4,25 +4,27 @@ import Modal from "../../Modal";
 import PurchasesList from "./PurchasesList";
 import PurchasesAdd from "./PurchasesAdd";
 import {observer} from "mobx-react-lite";
-import { tavernStyle } from "../../../styles/Tavern";
+import { sectionButtonStyle, sectionStyle } from "../../../styles/Section";
 import PurchasesSelected from "./PurchasesSelected";
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 
 function Purchases() {
-    const tavern = tavernStyle();
+    const section = sectionStyle();
+    const sectionButton = sectionButtonStyle();
     const {addPurchase} = useStore();
     const [modalActiveAddPurchase, setModalActiveAddPurchase] = useState(false);
 
     return(
         <div>
-            <button id="addPurchase" onClick={() => setModalActiveAddPurchase(true)}>Купить отдых</button>
+            <AddIcon id="createPurchase" className={sectionButton.buttonAdd} onClick={() => setModalActiveAddPurchase(true)}/>
+            <br />
             <PurchasesSelected/>
             <PurchasesList/>
             <Modal active={modalActiveAddPurchase} setActive={setModalActiveAddPurchase}>
-                <div className={tavern.content}>
+                <div className={section.content}>
                     <PurchasesAdd/>
-                    <div className={tavern.button}>
-                        <button id="addRest" onClick={() => {addPurchase(); setModalActiveAddPurchase(false)}}>Отдохнуть</button>
-                    </div>
+                    <CheckIcon id="addRest" className={sectionButton.buttonComplete} onClick={() => {addPurchase(); setModalActiveAddPurchase(false)}}/>
                 </div>
             </Modal>
         </div>

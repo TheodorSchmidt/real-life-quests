@@ -28,7 +28,7 @@ export const modalStyle = createUseStyles({
         alignItems: 'center',
         justifyContent: 'center',
         transition: '0.5s',
-        transform: 'scale(1)',
+        transform: 'scale(1.2)',
         opacity: '1',
         pointerEvents: 'all',
     },

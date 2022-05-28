@@ -1,34 +1,45 @@
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import useStore from "../../../hooks/useStore";
-import { questsStyle } from "../../../styles/Guild";
-import { questsElementStyle } from "../../../styles/Guild";
+import { sectionStyle, sectionButtonStyle } from "../../../styles/Section";
 import GroupsEdit from "./GroupsEdit";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckIcon from '@mui/icons-material/Check';
 import Modal from "../../Modal";
 
 function GroupsSelected() {
-    const groups = questsStyle();
-    const groupsElement = questsElementStyle();
+    const section = sectionStyle();
+    const sectionButton = sectionButtonStyle();
     const {selectedGroup, editGroup, deleteGroup} = useStore();
     const [modalActiveEditGroup, setModalActiveEditGroup] = useState(false);
 
+
+    function printDescription(description: string | undefined) {
+        if (description && description !== "") {
+            return(
+                <div className={section.description}>{description}</div>
+            ) 
+        } else {
+            return(
+                <></>
+            )
+        }
+    }
+
     if (selectedGroup) {
         return(
-            <div className={groups.info}>
-                <div className={groups.name}>{selectedGroup?.name}</div>
-                <div className={groups.description}>{selectedGroup?.description}</div>
+            <div className={section.info}>
+                <div className={section.name}>{selectedGroup?.name}</div>
+                {printDescription(selectedGroup.description)}
                 <div>
-                    <EditIcon className={groupsElement.buttonCancel} onClick={() => setModalActiveEditGroup(true)}/>
-                    <DeleteIcon className={groupsElement.buttonFailed} onClick={() => deleteGroup(selectedGroup?.id)}/>
+                    <EditIcon className={sectionButton.buttonCancel} onClick={() => setModalActiveEditGroup(true)}/>
+                    <DeleteIcon className={sectionButton.buttonFailed} onClick={() => deleteGroup(selectedGroup?.id)}/>
                 </div>
                 <Modal active={modalActiveEditGroup} setActive={setModalActiveEditGroup}>
-                    <div className={groups.content}>
+                    <div className={section.content}>
                         <GroupsEdit item={selectedGroup}/>
-                        <div className={groups.button}>
-                            <button id="editGroup" onClick={() => {editGroup(selectedGroup?.id); setModalActiveEditGroup(false)}}>Изменить</button>
-                        </div>
+                        <CheckIcon id="editGroup" className={sectionButton.buttonComplete} onClick={() => {editGroup(selectedGroup?.id); setModalActiveEditGroup(false)}}/>
                     </div>
                 </Modal>
             </div>

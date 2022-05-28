@@ -2,27 +2,28 @@ import React, {useState} from "react";
 import useStore from "../../../hooks/useStore";
 import Modal from "../../Modal";
 import {observer} from "mobx-react-lite";
-import { tavernStyle } from "../../../styles/Tavern";
+import { sectionButtonStyle, sectionStyle } from "../../../styles/Section";
 import RestsAdd from "./RestsAdd";
 import RestsList from "./RestsList";
 import RestsSelected from "./RestsSelected";
+import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 
 function Rests() {
-    const tavern = tavernStyle();
+    const section = sectionStyle();
+    const sectionButton = sectionButtonStyle();
     const {addRest} = useStore();
     const [modalActiveAddRest, setModalActiveAddRest] = useState(false);
 
     return(
         <div>
-            <button id="addRest" onClick={() => setModalActiveAddRest(true)}>Создать отдых</button>
+            <AddIcon id="createRest" className={sectionButton.buttonAdd} onClick={() => setModalActiveAddRest(true)}/>
             <RestsSelected/>
             <RestsList/>
             <Modal active={modalActiveAddRest} setActive={setModalActiveAddRest}>
-                <div className={tavern.content}>
+                <div className={section.content}>
                     <RestsAdd/>
-                    <div className={tavern.button}>
-                        <button id="addRest" onClick={() => {addRest(); setModalActiveAddRest(false)}}>Добавить</button>
-                    </div>
+                    <CheckIcon id="addRest" className={sectionButton.buttonComplete} onClick={() => {addRest(); setModalActiveAddRest(false)}}/>
                 </div>
             </Modal>
         </div>

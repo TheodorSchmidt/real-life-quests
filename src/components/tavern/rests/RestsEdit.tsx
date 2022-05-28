@@ -1,14 +1,16 @@
 import {observer} from "mobx-react-lite";
 import Rest from "../../../models/Rest";
+import { sectionStyle } from "../../../styles/Section";
 
 type Props = {
     item: Rest
 }
 
 function RestsEdit({item}: Props) {
+    const section = sectionStyle();
     return(
         <div>
-            <p>Изменить отдых</p>
+            <p className={section.headline}>Изменить отдых</p>
             <div key={item.name}>
                 <input 
                     id="restNameE"
