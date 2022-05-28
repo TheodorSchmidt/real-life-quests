@@ -1,6 +1,5 @@
 import React, {useState} from "react";
 import {observer} from "mobx-react-lite";
-import { tavernStyle } from "../../styles/Tavern";
 import {
     BrowserRouter as Router,
     Routes as Switch,
@@ -8,13 +7,14 @@ import {
     Link,
     Outlet
 } from "react-router-dom"; 
+import { sectionStyle } from "../../styles/Section";
 
 function Tavern() {
-    const tavern = tavernStyle();
+    const section = sectionStyle();
     return(
         <div>
-            <div className={tavern.menu}>
-                <ul className={tavern.navigation}>
+            <div className={section.menu}>
+                <ul className={section.navigation}>
                     <li>
                         <Link to="purchases">Отдых</Link>
                     </li>

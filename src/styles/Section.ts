@@ -53,7 +53,7 @@ export const sectionStyle = createUseStyles({
         alignItems: "center",
         justifyContent: "space-between",
         padding: "10px",
-        // boxShadow: "0 0 3px 0 rgba(0, 0, 0, 0.3)",
+        boxShadow: "0 0 1px 0 rgba(0, 0, 0, 0.3)",
         backgroundColor: "white"
     },
     'navigation': {

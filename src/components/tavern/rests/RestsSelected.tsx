@@ -14,11 +14,24 @@ function RestsSelected() {
     const {selectedRest, editRest, deleteRest} = useStore();
     const [modalActiveEditRest, setModalActiveEditRest] = useState(false);
 
+
+    function printDescription(description: string | undefined) {
+        if (description && description !== "") {
+            return(
+                <div className={section.description}>{description}</div>
+            ) 
+        } else {
+            return(
+                <></>
+            )
+        }
+    }
+
     if (selectedRest) {
         return(
             <div className={section.info}>
                 <div className={section.name}>{selectedRest.name}</div>
-                <div className={section.description}>{selectedRest?.description}</div>
+                {printDescription(selectedRest.description)}
                 <div>Цена за минуту: {selectedRest.cost}</div>
                 <div>
                     <DeleteIcon className={sectionButton.buttonFailed} onClick={() => deleteRest(selectedRest.id)}/>

@@ -11,16 +11,27 @@ import Modal from "../../Modal";
 
 function PurchasesSelected() {
     const section = sectionStyle();
-    const sectionElement = sectionElementStyle();
     const sectionButton = sectionButtonStyle();
     const {selectedPurchase, editPurchase, deletePurchase} = useStore();
     const [modalActiveEditPurchase, setModalActiveEditPurchase] = useState(false);
+
+    function printDescription(description: string | undefined) {
+        if (description && description !== "") {
+            return(
+                <div className={section.description}>{description}</div>
+            ) 
+        } else {
+            return(
+                <></>
+            )
+        }
+    }
 
     if (selectedPurchase) {
         return(
             <div className={section.info}>
                 <div className={section.name}>{selectedPurchase?.name}</div>
-                <div className={section.description}>{selectedPurchase?.description}</div>
+                {printDescription(selectedPurchase.description)}
                 <div>Дата: {Datetime.dateToString(selectedPurchase?.dateBuy)}</div>
                 <div>Время: {selectedPurchase.minutes}</div>
                 <div>Цена: {selectedPurchase.price}</div>
