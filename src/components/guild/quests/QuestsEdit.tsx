@@ -3,7 +3,6 @@ import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { questsStyle } from "../../../styles/Guild";
 import { sectionStyle } from "../../../styles/Section";
 import Group from "../../../models/Group";
 import Character from "../../../models/Character";

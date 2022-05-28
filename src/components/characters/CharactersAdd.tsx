@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import useStore from "../../hooks/useStore";
-import { charactersStyle } from "../../styles/Characters";
 import { sectionStyle } from "../../styles/Section";
 
 function CharactersAdd() {
     const section = sectionStyle();
-    const characters = charactersStyle();
 
     return(
         <div>
@@ -28,7 +26,7 @@ function CharactersAdd() {
             <div>
                 <textarea id="characterDescription" placeholder="Описание"></textarea>
             </div>
-            <div className={characters.selectItem}>
+            <div className={section.selectItem}>
                 <select id="characterRelations" name="relations">
                     <option selected value="Nobody">Никто</option>
                     <option value="Familiar">Знакомый</option>

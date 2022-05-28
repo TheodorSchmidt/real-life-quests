@@ -2,7 +2,6 @@ import {observer} from "mobx-react-lite";
 import useStore from "../../../hooks/useStore";
 import Purchase from "../../../models/Purchase";
 import Rest from "../../../models/Rest";
-import { tavernStyle } from "../../../styles/Tavern";
 import { sectionStyle } from "../../../styles/Section";
 import Character from "../../../models/Character";
 

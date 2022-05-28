@@ -17,20 +17,17 @@ function Header() {
                 <li>
                     <Link to="/guild">Гильдия</Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link to="/perks">Навыки</Link> 
-                </li>
+                </li> */}
                 <li>
                     <Link to="/characters">Персонажи</Link>
                 </li>
-                <li>
+                {/* <li>
                     <Link to="/locations">Локации</Link>
-                </li>
+                </li> */}
                 <li>
                     <Link to="/tavern">Таверна</Link>
-                </li>
-                <li>
-                    <Link to="/diary">Дневник</Link>
                 </li>
                 <li>
                     <Link to="/statistic">Статистика</Link>

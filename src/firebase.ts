@@ -1,7 +1,6 @@
-import firebase from 'firebase/app';
 import { initializeApp } from 'firebase/app';
 import 'firebase/database';
-import { getDatabase, ref } from 'firebase/database';
+import { getDatabase } from 'firebase/database';
 
 const config = {
     apiKey: process.env.REACT_APP_APIKEY,
@@ -16,9 +15,3 @@ const config = {
 
 const app = initializeApp(config);
 export const database = getDatabase(app);
-// export const questsRef = ref(database, "quests");
-// export const charactersRef = ref(database, "characters");
-// export const locationsRef = ref(database, "locations");
-// export const restsRef = ref(database, "rests");
-// export const perksRef = ref(database, "perks");
-// export const notesRef = ref(database, "notes");

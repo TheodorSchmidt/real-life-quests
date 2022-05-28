@@ -1,7 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import useStore from "../../hooks/useStore";
-import { charactersStyle } from "../../styles/Characters";
 import { sectionButtonStyle, sectionStyle } from "../../styles/Section";
 import Modal from "../Modal";
 import CharactersAdd from "./CharactersAdd";

@@ -8,7 +8,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import Modal from "../Modal";
 import { sectionStyle, sectionElementStyle, sectionButtonStyle } from "../../styles/Section";
-// import Print from "../../modules/Print";
+
 function CharactersSelected() {
     const section = sectionStyle();
     const sectionElement = sectionElementStyle();
