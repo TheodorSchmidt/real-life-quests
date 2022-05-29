@@ -160,6 +160,7 @@ class Store {
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
         const questCharacter = (<HTMLSelectElement>document.querySelector('#questCharacter')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
+        const questRepeatable = (<HTMLSelectElement>document.querySelector('#questRepeatable')).value;
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation && questGroup) {
             let questData: Quest = {
                 name: questName,
@@ -178,6 +179,11 @@ class Store {
                 questData.dateDifference = Datetime.calcDaysDifference(date);
                 questData.dateModif = Datetime.calcDateCoefficient(questData.dateDifference);
                 questData.reward = Math.round(questData.reward * questData.dateModif);
+                if (questRepeatable !== "default") {
+                    questData.repeatableDays = Number(questRepeatable);
+                    questData.repeatableCurrent = 0;
+                    questData.repeatableBest = 0;
+                }
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -234,7 +240,6 @@ class Store {
             const quest: Quest = snapshot.val();
             if (cancel === false) {
                 if (complete === true) {
-                    quest.status = 2;
                     quest.dateComplete = new Date();
                     if (quest.deadline) {
                         this.updateDateDiff(quest);
@@ -243,9 +248,32 @@ class Store {
                         this.updateActivity(quest.character, 1);
                         this.cancelSelectingCharacter();
                     }
+                    if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
+                        if (quest.dateModif && quest.dateModif >= 1) {
+                            quest.repeatableCurrent += 1;
+                        } else {
+                            if (quest.repeatableCurrent > quest.repeatableBest) {
+                                quest.repeatableBest = quest.repeatableCurrent;
+                            }
+                            quest.repeatableCurrent = 1;
+                        }
+                        quest.status = 1;
+                        quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
+                    } else {
+                        quest.status = 2;
+                    }
                     this.updateCoins(quest.reward);
                 } else {
                     quest.status = 3;
+                    quest.dateComplete = new Date();
+                    if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
+                        if (quest.repeatableCurrent > quest.repeatableBest) {
+                            quest.repeatableBest = quest.repeatableCurrent;
+                        }
+                        quest.repeatableCurrent = 0;
+                        quest.status = 1;
+                        quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
+                    }
                 }
             } else if (cancel === true) {
                 if (complete === true) {
@@ -255,8 +283,7 @@ class Store {
                         this.cancelSelectingCharacter();
                     }
                     delete quest.dateComplete;
-                    this.updateCoins(-quest.reward);
-                    
+                    this.updateCoins(-quest.reward);                
                 } else {
                     quest.status = 1;
                 }

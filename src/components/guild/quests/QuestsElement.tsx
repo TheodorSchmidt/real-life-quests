@@ -16,6 +16,7 @@ function QuestsElement({item}: Props) {
     const sectionButton = sectionButtonStyle();
     const {completeQuest, selectQuest, selectedQuest, updateDateDiff} = useStore();
     updateDateDiff(item);
+
     if (item.status === 1) {
         return(
             <div className={item.id === selectedQuest?.id ? sectionElement.blockSelect : sectionElement.block} onClick={() => selectQuest(item)}>

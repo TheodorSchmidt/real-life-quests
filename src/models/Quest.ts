@@ -12,20 +12,27 @@ export enum Status { ACTIVE=1, COMPLETED=2, FAILED=3 }
 export default interface Quest {
     id?: string;
     name: string;
+    status: Status;
     group?: string;
     description?: string;
+
     difficulty: Coefficient; 
     importancy: Coefficient; 
     motivation: Coefficient; 
+
     deadline?: Date;
     dateModif?: DateCoefficient;
     dateDifference?: number;
     dateComplete?: Date;
-    reward: number; 
-    experience?: number; //? yet
+
+    isRepeatable?: boolean;
+    repeatableDays?: number;
+    repeatableCurrent?: number;
+    repeatableBest?: number;
+
     character?: string;
-    locations?: Location;
-    perks?: Perk[];
-    //line?: string;
-    status: Status;
+
+    reward: number; 
+
+    experience?: number; //? yet
 }

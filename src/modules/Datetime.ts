@@ -15,6 +15,11 @@ const Datetime = {
         yesterday.setDate(yesterday.getDate() - 1)
         return Datetime.dateToString(yesterday);
     },
+    addDays: (date: Date = new Date(), days: number) => {
+        let newDate = new Date(date);
+        newDate.setDate(newDate.getDate() + days);
+        return newDate;
+    },
     calcDaysDifference: (date: Date) => {
         let today = new Date();
         let deadline = new Date(date);

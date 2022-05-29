@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import useStore from "../../../hooks/useStore";
 import {observer} from "mobx-react-lite";
-import  { DateCoefficient }  from "../../../models/Quest";
+import  Quest, { DateCoefficient }  from "../../../models/Quest";
 import Modal from "../../Modal";
 import "react-datepicker/dist/react-datepicker.css";
 import QuestsEdit from "./QuestsEdit";
@@ -107,6 +107,32 @@ function QuestsSelected() {
         }
     }
 
+    function printRepeatable(quest: Quest) {
+        // if (quest.repeatableCurrent && quest.repeatableDays) {
+        //     return(
+        //         <div>
+        //             <div>Повторяется каждые {quest.repeatableDays} дня</div>
+        //             <div>Текущий счет: {quest.repeatableCurrent}</div>
+        //             <div>Лучший счет: {quest.repeatableBest}</div>
+        //         </div>
+        //     )
+        // } else {
+        //     return(<></>)
+        // }
+        if (quest.repeatableDays) {
+            return(
+                <div>
+                    <div>Повторяется каждые {quest.repeatableDays} дня</div>
+                    <div>Текущий счет: {quest.repeatableCurrent}</div>
+                    <div>Лучший счет: {quest.repeatableBest}</div>
+                </div>
+            )
+
+        } else {
+            return(<div>f</div>)
+        }
+    }
+
     if (selectedQuest) {
         if (selectedQuest.status === 1) {
             return(
@@ -124,6 +150,8 @@ function QuestsSelected() {
                     <div>Крайний срок: {printDate(selectedQuest.deadline)}</div>
                     {printDaysDifference(selectedQuest.dateDifference)}
                     {printDateModif(selectedQuest.dateModif)}
+                    <br/>
+                    {printRepeatable(selectedQuest)}
                     <div>Награда: {selectedQuest.reward}</div> 
                     <div>
                         <DeleteIcon className={sectionButton.buttonFailed} onClick={() => deleteQuest(selectedQuest?.id)}/>
