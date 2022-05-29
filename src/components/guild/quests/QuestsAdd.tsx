@@ -78,7 +78,7 @@ function QuestsAdd() {
                 <span>Срок выполнения</span>
                 <DatePicker id="questDeadline" selected={deadline} onChange={(date: Date) => setDeadline(date)}/>
             </div>
-            <div>
+            {/* <div>
                 <select id="questRepeatable" name="repeatable">
                     <option selected value="default">Не повторять</option>
                     <option value="1">Каждый день</option>
@@ -87,7 +87,7 @@ function QuestsAdd() {
                     <option value="14">Каждые две недели</option>
                     <option value="28">Каждый месяц</option>
                 </select>
-            </div>
+            </div> */}
         </div>
     )
 }

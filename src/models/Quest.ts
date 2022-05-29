@@ -25,10 +25,10 @@ export default interface Quest {
     dateDifference?: number;
     dateComplete?: Date;
 
-    isRepeatable?: boolean;
-    repeatableDays?: number;
-    repeatableCurrent?: number;
-    repeatableBest?: number;
+    // isRepeatable?: boolean;
+    // repeatableDays?: number;
+    // repeatableCurrent?: number;
+    // repeatableBest?: number;
 
     character?: string;
 

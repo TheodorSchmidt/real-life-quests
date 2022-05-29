@@ -27,10 +27,12 @@ class Store {
         attr: "default",
         isDown: true
     }
+    @observable questStatistic: any[] = [];
     @observable rests: Rest[] = [];
     @observable selectedRest: Rest | undefined = undefined;
     @observable purchases: Purchase[] = [];
     @observable selectedPurchase: Purchase | undefined = undefined;
+    @observable purchaseStatistic: any[] = [];
     @observable characters: Character[] = [];
     @observable selectedCharacter: Character | undefined = undefined;
 
@@ -52,6 +54,9 @@ class Store {
                 selectedRest: observable,
                 selectedPurchase: observable,
                 filterQuest: observable,
+                sortQuest: observable,
+                questStatistic: observable,
+                purchaseStatistic: observable,
                 groups: observable,
                 rests: observable,
                 purchases: observable,
@@ -160,7 +165,7 @@ class Store {
         const questDescription = (<HTMLTextAreaElement>document.querySelector('#questDescription')).value;
         const questCharacter = (<HTMLSelectElement>document.querySelector('#questCharacter')).value;
         const questDeadline = (<HTMLInputElement>document.querySelector('#questDeadline')).value;
-        const questRepeatable = (<HTMLSelectElement>document.querySelector('#questRepeatable')).value;
+        // const questRepeatable = (<HTMLSelectElement>document.querySelector('#questRepeatable')).value;
         if (questName && questName !== "" && questDifficulty && questImportancy && questMotivation && questGroup) {
             let questData: Quest = {
                 name: questName,
@@ -179,11 +184,11 @@ class Store {
                 questData.dateDifference = Datetime.calcDaysDifference(date);
                 questData.dateModif = Datetime.calcDateCoefficient(questData.dateDifference);
                 questData.reward = Math.round(questData.reward * questData.dateModif);
-                if (questRepeatable !== "default") {
-                    questData.repeatableDays = Number(questRepeatable);
-                    questData.repeatableCurrent = 0;
-                    questData.repeatableBest = 0;
-                }
+                // if (questRepeatable !== "default") {
+                //     questData.repeatableDays = Number(questRepeatable);
+                //     questData.repeatableCurrent = 0;
+                //     questData.repeatableBest = 0;
+                // }
             }
             const newQuestKey = push(child(ref(database), 'quests')).key;
             const updates: any = {};
@@ -248,32 +253,32 @@ class Store {
                         this.updateActivity(quest.character, 1);
                         this.cancelSelectingCharacter();
                     }
-                    if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
-                        if (quest.dateModif && quest.dateModif >= 1) {
-                            quest.repeatableCurrent += 1;
-                        } else {
-                            if (quest.repeatableCurrent > quest.repeatableBest) {
-                                quest.repeatableBest = quest.repeatableCurrent;
-                            }
-                            quest.repeatableCurrent = 1;
-                        }
-                        quest.status = 1;
-                        quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
-                    } else {
-                        quest.status = 2;
-                    }
+                    // if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
+                    //     if (quest.dateModif && quest.dateModif >= 1) {
+                    //         quest.repeatableCurrent += 1;
+                    //     } else {
+                    //         if (quest.repeatableCurrent > quest.repeatableBest) {
+                    //             quest.repeatableBest = quest.repeatableCurrent;
+                    //         }
+                    //         quest.repeatableCurrent = 1;
+                    //     }
+                    //     quest.status = 1;
+                    //     quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
+                    // } else {
+                    //     quest.status = 2;
+                    // }
                     this.updateCoins(quest.reward);
                 } else {
                     quest.status = 3;
-                    quest.dateComplete = new Date();
-                    if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
-                        if (quest.repeatableCurrent > quest.repeatableBest) {
-                            quest.repeatableBest = quest.repeatableCurrent;
-                        }
-                        quest.repeatableCurrent = 0;
-                        quest.status = 1;
-                        quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
-                    }
+                    // quest.dateComplete = new Date();
+                    // if (quest.repeatableDays && quest.repeatableBest && quest.repeatableCurrent) {
+                    //     if (quest.repeatableCurrent > quest.repeatableBest) {
+                    //         quest.repeatableBest = quest.repeatableCurrent;
+                    //     }
+                    //     quest.repeatableCurrent = 0;
+                    //     quest.status = 1;
+                    //     quest.deadline = Datetime.addDays(quest.dateComplete, quest.repeatableDays);
+                    // }
                 }
             } else if (cancel === true) {
                 if (complete === true) {
@@ -732,6 +737,22 @@ class Store {
             return update(ref(database), updates)
         })
     }
+
+
+    // ================================================================================ //
+    // ============================== STATISTICS BLOCK ================================ //
+    // ================================================================================ //
+    makeQuestStatistic = (array: any[]) => {
+        runInAction(() => {
+            this.questStatistic = array;
+        })
+    }
+    makePurchaseStatistic = (array: any[]) => {
+        runInAction(() => {
+            this.questStatistic = array;
+        })
+    }
+
 }
 
 export default Store;

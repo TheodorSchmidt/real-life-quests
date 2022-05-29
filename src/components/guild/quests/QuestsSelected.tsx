@@ -107,31 +107,19 @@ function QuestsSelected() {
         }
     }
 
-    function printRepeatable(quest: Quest) {
-        // if (quest.repeatableCurrent && quest.repeatableDays) {
-        //     return(
-        //         <div>
-        //             <div>Повторяется каждые {quest.repeatableDays} дня</div>
-        //             <div>Текущий счет: {quest.repeatableCurrent}</div>
-        //             <div>Лучший счет: {quest.repeatableBest}</div>
-        //         </div>
-        //     )
-        // } else {
-        //     return(<></>)
-        // }
-        if (quest.repeatableDays) {
-            return(
-                <div>
-                    <div>Повторяется каждые {quest.repeatableDays} дня</div>
-                    <div>Текущий счет: {quest.repeatableCurrent}</div>
-                    <div>Лучший счет: {quest.repeatableBest}</div>
-                </div>
-            )
-
-        } else {
-            return(<div>f</div>)
-        }
-    }
+    // function printRepeatable(quest: Quest) {
+    //     if (quest.repeatableDays) {
+    //         return(
+    //             <div>
+    //                 <div>Повторяется каждые {quest.repeatableDays} дня</div>
+    //                 <div>Текущий счет: {quest.repeatableCurrent}</div>
+    //                 <div>Лучший счет: {quest.repeatableBest}</div>
+    //             </div>
+    //         )
+    //     } else {
+    //         return(<div>f</div>)
+    //     }
+    // }
 
     if (selectedQuest) {
         if (selectedQuest.status === 1) {
@@ -151,7 +139,7 @@ function QuestsSelected() {
                     {printDaysDifference(selectedQuest.dateDifference)}
                     {printDateModif(selectedQuest.dateModif)}
                     <br/>
-                    {printRepeatable(selectedQuest)}
+                    {/* {printRepeatable(selectedQuest)} */}
                     <div>Награда: {selectedQuest.reward}</div> 
                     <div>
                         <DeleteIcon className={sectionButton.buttonFailed} onClick={() => deleteQuest(selectedQuest?.id)}/>

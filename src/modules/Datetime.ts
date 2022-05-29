@@ -1,7 +1,7 @@
 import { DateCoefficient } from "../models/Quest";
 import Quest from "../models/Quest";
 const Datetime = {
-    dateToString: (date: Date) => {
+    dateToString: (date: Date = new Date()) => {
         const dateForm = new Date(date);
         const dd = String(dateForm.getDate()).padStart(2, '0');
         const mm = String(dateForm.getMonth() + 1).padStart(2, '0');
@@ -15,11 +15,11 @@ const Datetime = {
         yesterday.setDate(yesterday.getDate() - 1)
         return Datetime.dateToString(yesterday);
     },
-    addDays: (date: Date = new Date(), days: number) => {
-        let newDate = new Date(date);
-        newDate.setDate(newDate.getDate() + days);
-        return newDate;
-    },
+    // addDays: (date: Date = new Date(), days: number) => {
+    //     let newDate = new Date(date);
+    //     newDate.setDate(newDate.getDate() + days);
+    //     return newDate;
+    // },
     calcDaysDifference: (date: Date) => {
         let today = new Date();
         let deadline = new Date(date);
