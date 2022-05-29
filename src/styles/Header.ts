@@ -12,7 +12,7 @@ export const headerStyle = createUseStyles({
     sublist: {
         display: 'none',
         '& li': {
-            fontSize: '24px',
+            fontSize: '40px',
             display: "inline",
             marginRight: "40px",
             padding: "3px"
@@ -22,9 +22,9 @@ export const headerStyle = createUseStyles({
         margin: "0px",
         padding: "4px",
         '& li': {
-            fontSize: '24px',
+            fontSize: '30px',
             display: "inline",
-            marginRight: "40px",
+            marginRight: "50px",
             padding: "3px",
             '&:hover': {
                 '.sublist': {
