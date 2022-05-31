@@ -34,7 +34,7 @@ export const modalStyle = createUseStyles({
     },
     'modal_content': {
         display: 'inline-block',
-        padding: '50px',
+        padding: '70px',
         paddingTop: '10px',
         borderRadius: '12px',
         backgroundColor: 'white',
@@ -44,7 +44,7 @@ export const modalStyle = createUseStyles({
     },
     'modal_content_active': {
         display: 'inline-block',
-        padding: '50px',
+        padding: '70px',
         paddingTop: '10px',
         borderRadius: '12px',
         backgroundColor: 'white',

@@ -31,7 +31,7 @@ function Purchases() {
                         <select id="purchaseCharacterFilter" name="character">
                             <option selected value="all">Все</option>
                             <option value="default">Без персонажа</option>
-                            {getCharacters().map(c => printCharacters(c))}
+                            {getCharacters.map(c => printCharacters(c))}
                         </select>
                     </li>
                     <li>

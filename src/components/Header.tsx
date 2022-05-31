@@ -7,7 +7,7 @@ import { headerStyle } from "../styles/Header";
 
 function Header() {
     const header = headerStyle();
-    const {coins} = useStore();
+    const {getCoins} = useStore();
     return (
        <div className={header.header}>
            <ul className={header.list}>
@@ -33,7 +33,7 @@ function Header() {
                     <Link to="/statistic">Статистика</Link>
                 </li>
                 <li>
-                    Монет: {coins}                
+                    Монет: {getCoins}                
                 </li>
             </ul>
        </div>

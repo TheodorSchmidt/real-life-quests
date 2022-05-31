@@ -5,14 +5,14 @@ import CharactersElement from "./CharactersElement";
 
 function CharactersList() {
 
-    const {characters} = useStore();
+    const {getCharacters} = useStore();
     return(
         <Virtuoso
             style={{ height: "800px", width: "50%" }}
-            data={characters}
+            data={getCharacters}
             itemContent={(index) => {
                 return(
-                    <CharactersElement item={characters[index]} />
+                    <CharactersElement item={getCharacters[index]} />
                 )}
             }
         />

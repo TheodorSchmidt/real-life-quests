@@ -61,14 +61,14 @@ function Quests() {
                         <select id="questGroupFilter" name="group">
                             <option selected value="all">Все</option>
                             <option value="default">Без группы</option>
-                            {getGroups().map(g => printGroup(g))}
+                            {getGroups.map(g => printGroup(g))}
                         </select>
                     </li>
                     <li>
                         <select id="questCharacterFilter" name="character">
                             <option selected value="all">Все</option>
                             <option value="default">Без персонажа</option>
-                            {getCharacters().map(c => printCharacters(c))}
+                            {getCharacters.map(c => printCharacters(c))}
                         </select>
                     </li>
                     <li>

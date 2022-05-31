@@ -1,5 +1,5 @@
 import { get, ref, onValue, child, push, update, remove } from 'firebase/database';
-import { runInAction, action, observable, makeAutoObservable } from 'mobx';
+import { runInAction, action, observable, makeAutoObservable, computed } from 'mobx';
 import { database } from '../firebase';
 import Quest from "../models/Quest";
 import Group from '../models/Group';
@@ -13,7 +13,7 @@ import Purchase from '../models/Purchase';
 import Character from '../models/Character';
 
 class Store {
-    @observable coins: number = 0;
+    coins: number = 0;
     @observable quests: Quest[] = [];
     @observable selectedQuest: Quest | undefined = undefined;
     @observable groups: Group[] = [];
@@ -45,46 +45,8 @@ class Store {
        const charactersRef = ref(database, 'characters/');
 
        runInAction(() => {
-           makeAutoObservable(this, {
-                coins: observable,
-                quests: observable,
-                selectedQuest: observable,
-                selectedGroup: observable,
-                selectedCharacter: observable,
-                selectedRest: observable,
-                selectedPurchase: observable,
-                filterQuest: observable,
-                sortQuest: observable,
-                questStatistic: observable,
-                purchaseStatistic: observable,
-                groups: observable,
-                rests: observable,
-                purchases: observable,
-                characters: observable,
-                updateCoins: action,
-                updateDateDiff: action,
-                updateActivity: action,
-                getQuests: action,
-                getGroups: action,
-                getRests: action,
-                getPurchases: action,
-                addQuest: action,
-                addGroup: action,
-                addRest: action,
-                addPurchase: action,
-                addCharacter: action,
-                editQuest: action,
-                editGroup: action,
-                editRest: action,
-                editPurchase: action,
-                editCharacter: action,
-                deleteQuest: action,
-                deleteGroup: action,
-                deleteRest: action,
-                completeQuest: action,
-            })
+            makeAutoObservable(this, {})
             onValue(coinsRef, (snapshot) => {
-                this.coins = 0;
                 const data = snapshot.val();
                 this.coins = data;
             })
@@ -135,10 +97,10 @@ class Store {
     // ================================================================================ //
     // ================================= COINS BLOCK ================================== //
     // ================================================================================ //
-    getCoins = () => {
-        return(toJS(this.coins));
+    @computed get getCoins() {
+        return(toJS(this.coins))
     }
-    updateCoins = (sum: number = 0) => {
+    @action updateCoins = (sum: number = 0) => {
         const coinsRef = ref(database);
         get(child(coinsRef, 'coins')).then((snapshot) => {
             let coins = snapshot.val();
@@ -153,10 +115,10 @@ class Store {
     // ================================================================================ //
     // ================================= QUESTS BLOCK ================================= //
     // ================================================================================ //
-    getQuests = () => {
-        return(toJS(this.quests));
+    @computed get getQuests() {
+        return(toJS(this.quests))
     }
-    addQuest = () => {
+    @action addQuest = () => {
         const questName = (<HTMLInputElement>document.querySelector('#questName')).value;
         const questGroup = (<HTMLSelectElement>document.querySelector('#questGroup')).value
         const questDifficulty = (<HTMLSelectElement>document.querySelector('#questDifficulty')).value;
@@ -196,7 +158,7 @@ class Store {
             return update(ref(database), updates);
         }
     }
-    editQuest = (id: string = "default") => {
+    @action editQuest = (id: string = "default") => {
         const questsRef = ref(database);
         const questName = (<HTMLInputElement>document.querySelector('#questNameE')).value;
         const questGroup = (<HTMLSelectElement>document.querySelector('#questGroupE')).value
@@ -235,17 +197,18 @@ class Store {
             })
         }  
     }
-    deleteQuest = (id: string = "default") => {
+    @action deleteQuest = (id: string = "default") => {
         this.cancelSelectingQuest();
         return remove(ref(database, '/quests/' + id));
     }
-    completeQuest = (id: string = "default", complete: boolean, cancel: boolean) => {
+    @action completeQuest = (id: string = "default", complete: boolean, cancel: boolean) => {
         const questsRef = ref(database);
         get(child(questsRef, `quests/${id}`)).then((snapshot) => {
             const quest: Quest = snapshot.val();
             if (cancel === false) {
                 if (complete === true) {
                     quest.dateComplete = new Date();
+                    quest.status = 2;
                     if (quest.deadline) {
                         this.updateDateDiff(quest);
                     }
@@ -299,17 +262,18 @@ class Store {
             return update(ref(database), updates)
         })
     }
-    selectQuest = (quest: Quest) => {
-        runInAction(() => {
-            this.selectedQuest = quest;
-        })
+    @action selectQuest = (quest: Quest) => {
+        // runInAction(() => {
+        // })
+        this.selectedQuest = quest;
     }
-    cancelSelectingQuest = () => {
-        runInAction(() => {
-            this.selectedQuest = undefined;
-        })
+    @action cancelSelectingQuest = () => {
+        // runInAction(() => {
+        // })
+        this.selectedQuest = undefined;
+
     }
-    updateDateDiff = (quest: Quest) => {
+    @action updateDateDiff = (quest: Quest) => {
         if (quest.deadline) {
             const difference = Datetime.calcDaysDifference(quest.deadline);
             // console.log("Новая разница: ", difference);
@@ -329,7 +293,7 @@ class Store {
             }
         }
     }
-    makeAttrDefault = (id: string, attr: string) => {
+    @action makeAttrDefault = (id: string, attr: string) => {
         const questsRef = ref(database);
         get(child(questsRef, `quests/${id}`)).then((snapshot) => {
             let quest: Quest = snapshot.val();
@@ -339,13 +303,11 @@ class Store {
             return update(ref(database), updates)
         })  
     }
-    setFilterOptions = (attr: string, value: string) => {
+    @action setFilterOptions = (attr: string, value: string) => {
         this.cancelSelectingQuest();
-        runInAction(() => {
-            this.filterQuest[attr] = value;
-        })
+        this.filterQuest[attr] = value;
     }
-    setSortOptions = (value: string) => {
+    @action setSortOptions = (value: string) => {
         this.cancelSelectingQuest();
         let attr = "default";
         let isDown = true;
@@ -374,20 +336,24 @@ class Store {
             attr = "motivation";
             isDown = true;
         }
-        runInAction(() => {
-            this.sortQuest.attr = attr;
-            this.sortQuest.isDown = isDown;
-        })
+        // runInAction(() => {
+            
+        // })
+        this.sortQuest.attr = attr;
+        this.sortQuest.isDown = isDown;
     }
     
 
     // ================================================================================ //
     // ================================= GROUPS BLOCK ================================= //
     // ================================================================================ //
-    getGroups = () => {
-        return(toJS(this.groups));
+    // getGroups = () => {
+    //     return(toJS(this.groups));
+    // }
+    @computed get getGroups() {
+        return(toJS(this.groups))
     }
-    addGroup = () => {
+    @action addGroup = () => {
         const groupName = (<HTMLInputElement>document.querySelector('#groupName')).value;
         const groupDescription = (<HTMLTextAreaElement>document.querySelector('#groupDescription')).value;
         if (groupName) {
@@ -401,7 +367,7 @@ class Store {
             return update(ref(database), updates);
         }
     }
-    editGroup = (id: string = "default") => {
+    @action editGroup = (id: string = "default") => {
         const groupsRef = ref(database);
         const groupName = (<HTMLInputElement>document.querySelector('#groupNameE')).value;
         const groupDescription = (<HTMLTextAreaElement>document.querySelector('#groupDescriptionE')).value;
@@ -417,7 +383,7 @@ class Store {
             })
         }
     }
-    deleteGroup = (id: string = "group") => {
+    @action deleteGroup = (id: string = "group") => {
         this.cancelSelectingGroup();
         this.filterQuest.group = "default";
         const searching = this.quests.filter(quest => quest.group === id);
@@ -429,27 +395,30 @@ class Store {
         })
         return remove(ref(database, '/groups/' + id));
     }
-    findGroupById = (id: string = "default") => {
+    @action findGroupById = (id: string = "default") => {
         return this.groups.find(group => group.id === id)
     }
-    selectGroup = (group: Group) => {
-        runInAction(() => {
-            this.selectedGroup = group;
-        })
+    @action selectGroup = (group: Group) => {
+        // runInAction(() => {
+        // })
+        this.selectedGroup = group;
     }
-    cancelSelectingGroup = () => {
-        runInAction(() => {
-            this.selectedGroup = undefined;
-        })
+    @action cancelSelectingGroup = () => {
+        // runInAction(() => {
+        // })
+        this.selectedGroup = undefined;
     }
 
     // ================================================================================ //
     // ================================ RESTS BLOCK =================================== //
     // ================================================================================ //
-    getRests = () => {
-        return(toJS(this.rests));
+    // getRests = () => {
+    //     return(toJS(this.rests));
+    // }
+    @computed get getRests() {
+        return(toJS(this.rests))
     }
-    addRest = () => {
+    @action addRest = () => {
         const restName = (<HTMLInputElement>document.querySelector('#restName')).value;
         const restDescription = (<HTMLTextAreaElement>document.querySelector('#restDescription')).value;
         const restCost = (<HTMLInputElement>document.querySelector('#restCost')).value;
@@ -466,7 +435,7 @@ class Store {
             return update(ref(database), updates);
         }
     }
-    editRest = (id: string = "default") => {
+    @action editRest = (id: string = "default") => {
         const restsRef = ref(database);
         const restName = (<HTMLInputElement>document.querySelector('#restNameE')).value;
         const restDescription = (<HTMLTextAreaElement>document.querySelector('#restDescriptionE')).value;
@@ -484,31 +453,31 @@ class Store {
             })
         }
     }
-    deleteRest = (id: string = "default") => {
+    @action deleteRest = (id: string = "default") => {
         this.cancelSelectingRest();
         return remove(ref(database, '/rests/' + id));
     }
-    selectRest = (rest: Rest) => {
-        runInAction(() => {
-            this.selectedRest = rest;
-        })
+    @action selectRest = (rest: Rest) => {
+        // runInAction(() => {
+        // })
+        this.selectedRest = rest;
     }
-    cancelSelectingRest = () => {
-        runInAction(() => {
-            this.selectedRest = undefined;
-        })
+    @action cancelSelectingRest = () => {
+        // runInAction(() => {
+        // })
+        this.selectedRest = undefined;
     }
-    findRestById = (id: string = "default") => {
+    @action findRestById = (id: string = "default") => {
         return this.rests.find(rest => rest.id === id);
     }
 
     // ================================================================================ //
     // =============================== PURCHASES BLOCK ================================ //
     // ================================================================================ //
-    getPurchases = () => {
-        return(toJS(this.purchases));
+    @computed get getPurchases() {
+        return(toJS(this.purchases))
     }
-    addPurchase = () => {
+    @action addPurchase = () => {
         const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseName')).value;
         const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutes')).value;
         const purchaseCharacter = (<HTMLSelectElement>document.querySelector('#purchaseCharacter')).value;
@@ -535,7 +504,7 @@ class Store {
             return update(ref(database), updates);
         }
     }
-    editPurchase = (id: string = "default") => {
+    @action editPurchase = (id: string = "default") => {
         const purchasesRef = ref(database);
         const purchaseName = (<HTMLSelectElement>document.querySelector('#purchaseNameE')).value;
         const purchaseMinutes = (<HTMLInputElement>document.querySelector('#purchaseMinutesE')).value;
@@ -563,11 +532,11 @@ class Store {
             })
         }
     }
-    deletePurchase = (id: string = "default") => {
+    @action deletePurchase = (id: string = "default") => {
         this.cancelSelectingPurchase();
         return remove(ref(database, '/purchases/' + id));
     }
-    cancelPurchase = (purchase: Purchase) => {
+    @action cancelPurchase = (purchase: Purchase) => {
         this.cancelSelectingPurchase();
         this.updateCoins(purchase.price);
         if (purchase.character) {
@@ -576,25 +545,27 @@ class Store {
         }
         return remove(ref(database, '/purchases/' + purchase.id));
     }
-    selectPurchase = (purchase: Purchase) => {
-        runInAction(() => {
-            this.selectedPurchase = purchase;
-        })
+    @action selectPurchase = (purchase: Purchase) => {
+        // runInAction(() => {
+            
+        // })
+        this.selectedPurchase = purchase;
     }
-    cancelSelectingPurchase = () => {
-        runInAction(() => {
-            this.selectedPurchase = undefined;
-        })
+    @action cancelSelectingPurchase = () => {
+        // runInAction(() => {
+            
+        // })
+        this.selectedPurchase = undefined;
     }
 
 
     // ================================================================================ //
     // ============================== CHARACTERS BLOCK ================================ //
     // ================================================================================ //
-    getCharacters = () => {
-        return(toJS(this.characters));
+    @computed get getCharacters() {
+        return(toJS(this.characters))
     }
-    addCharacter = () => {
+    @action addCharacter = () => {
         const characterNickname = (<HTMLInputElement>document.querySelector('#characterNickname')).value;
         const characterRealname = (<HTMLInputElement>document.querySelector('#characterRealname')).value;
         const characterDescription = (<HTMLInputElement>document.querySelector('#characterDescription')).value;
@@ -628,7 +599,7 @@ class Store {
             return update(ref(database), updates);
         }
     }
-    editCharacter = (id: string = "default") => {   
+    @action editCharacter = (id: string = "default") => {   
         const charactersRef = ref(database);
         const characterNickname = (<HTMLInputElement>document.querySelector('#characterNicknameE')).value;
         const characterRealname = (<HTMLInputElement>document.querySelector('#characterRealnameE')).value;
@@ -657,7 +628,7 @@ class Store {
             })
         }
     }
-    deleteCharacter = (id: string = "default") => {
+    @action deleteCharacter = (id: string = "default") => {
         this.cancelSelectingCharacter();
         const searching = this.quests.filter(quest => quest.character === id);
         searching.forEach(quest => {
@@ -666,24 +637,24 @@ class Store {
         })
         return remove(ref(database, '/characters/' + id));
     }
-    selectCharacter = (character: Character) => {
-        runInAction(() => {
-            this.selectedCharacter = character;
-        })
+    @action selectCharacter = (character: Character) => {
+        // runInAction(() => {
+        // })
+        this.selectedCharacter = character;
+
     }
-    cancelSelectingCharacter = () => {
-        runInAction(() => {
-            this.selectedCharacter = undefined;
-        })
+    @action cancelSelectingCharacter = () => {
+        // runInAction(() => {
+        // })
+        this.selectedCharacter = undefined;
     }
-    findCharacterById = (id: string = "default") => {
+    @action findCharacterById = (id: string = "default") => {
         return this.characters.find(character => character.id === id)
     }
-    updateActivity = (id: string = "default", act: number, day: Date = new Date(), isCancel: boolean = false) => {
+    @action updateActivity = (id: string = "default", act: number, day: Date = new Date(), isCancel: boolean = false) => {
         const charactersRef = ref(database);
         get(child(charactersRef, `characters/${id}`)).then((snapshot) => {
             let characterData: Character = snapshot.val();
-            console.log(characterData);
             let thisDayInd = characterData.activity.findIndex((a) => a.date == Datetime.dateToString(new Date(day)))
             if (thisDayInd == -1) {
                 characterData.activity.push(
@@ -692,11 +663,9 @@ class Store {
                     active: Number(act),
                     check: false
                 })
-                console.log("SOME SHIT")
             } else {
                 characterData.activity[thisDayInd].active += act;
                 characterData.activity[thisDayInd].check = false;
-                console.log("Я ЗДЕСЬ")
             }
             if (act > 0) {
                 characterData.relationsCoins = Relate.changeRelationsCoins(characterData.relationsCoins, characterData.relations, true, isCancel);
@@ -710,7 +679,7 @@ class Store {
             return update(ref(database), updates)
         })
     }
-    checkActivity = (id: string = "default") => {
+    @action checkActivity = (id: string = "default") => {
         const charactersRef = ref(database);
         get(child(charactersRef, `characters/${id}`)).then((snapshot) => {
             let characterData: Character = snapshot.val();
@@ -742,15 +711,16 @@ class Store {
     // ================================================================================ //
     // ============================== STATISTICS BLOCK ================================ //
     // ================================================================================ //
-    makeQuestStatistic = (array: any[]) => {
-        runInAction(() => {
-            this.questStatistic = array;
-        })
+    @action makeQuestStatistic = (array: any[]) => {
+        // runInAction(() => {
+        // })
+        this.questStatistic = array;
+
     }
-    makePurchaseStatistic = (array: any[]) => {
-        runInAction(() => {
-            this.questStatistic = array;
-        })
+    @action makePurchaseStatistic = (array: any[]) => {
+        // runInAction(() => {
+        // })
+        this.questStatistic = array;
     }
 
 }

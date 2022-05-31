@@ -64,6 +64,10 @@ export const sectionStyle = createUseStyles({
             marginRight: "5px",
             padding: "3px"
         }
+    },
+    'element': {
+        fontSize: '18px',
+        fontWeight: 'bold',
     }
 })
 

@@ -12,16 +12,16 @@ export default interface Character {
     realname: string;
     relations: Relations; 
     relationsCoins: number;
-    photo?: string;
+    // photo?: string;
     address?: string;
-    work?: string;
+    // work?: string;
     phone?: string;
-    secondPhone?: string;
+    // secondPhone?: string;
     email?: string;
-    secondEmail?: string;
+    // secondEmail?: string;
     description?: string;
     activity: Activity[];
-    social?: {
-        [network: string]: string;
-    } 
+    // social?: {
+    //     [network: string]: string;
+    // } 
 }
